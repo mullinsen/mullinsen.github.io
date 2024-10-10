@@ -62,8 +62,8 @@ app.post('/login', async (req, res) => {
 // };
 
 // Investment route
-app.post('/invest', authenticate, async (req, res) => {
-    const { share, amount } = req.body; // e.g., { share: 'AAPL', amount: 100 }
+// app.post('/invest', authenticate, async (req, res) => {
+    // const { share, amount } = req.body; // e.g., { share: 'AAPL', amount: 100 }
     // const user = await User.findById(req.userId);
 
     // if (user.coins >= amount) {
@@ -76,16 +76,16 @@ app.post('/invest', authenticate, async (req, res) => {
     //     await user.save();
     //     res.json({ message: 'Investment successful' });
     // } else {
-    res.status(400).json({ error: 'Insufficient coins' });
+    // res.status(400).json({ error: 'Insufficient coins' });
     // }
-});
+// });
 
 // Get user investments
-app.get('/portfolio', authenticate, async (req, res) => {
+// app.get('/portfolio', authenticate, async (req, res) => {
     //const user = await User.findById(req.userId);
     //res.json({ coins: user.coins, investments: user.investments });
-    res.status(400).json({ error: 'You have no coins' });
-});
+    // res.status(400).json({ error: 'You have no coins' });
+// });
 
 // Function to simulate fetching a share's value (in reality, connect to a stock API)
 function getShareValue(share) {
