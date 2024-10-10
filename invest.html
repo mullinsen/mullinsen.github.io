@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kremerte Pølser - Invest</title>
+</head>
+<body>
+    <h1>Kremerte Pølser - Invest</h1>
+    <div id="investment-section">
+        <h2>Invest</h2>
+        <input type="text" id="share-name" placeholder="Share Name">
+        <input type="number" id="investment-amount" placeholder="Investment Amount">
+        <button onclick="invest()">Invest</button>
+    </div>
+    <div>
+        <h2>Portfolio</h2>
+        <button onclick="getPortfolio()">Get Portfolio</button>
+        <div id="portfolio"></div>
+    </div>
+    <script>
+        let token = '';
+
+        async function invest() {
+            const share = document.getElementById('share-name').value;
+            const amount = document.getElementById('investment-amount').value;
+            const response = await fetch('http://localhost:5000/invest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({ share, amount })
+            });
+            const data = await response.json();
+            alert(data.message);
+        }
+
+        async function getPortfolio() {
+            const response = await fetch('http://localhost:5000/portfolio', {
+                method: 'GET',
+                headers: {
+                    'Authorization': token
+                }
+            });
+            const data = await response.json();
+            document.getElementById('portfolio').innerHTML = `Coins: ${data.coins} <br> Investments: ${JSON.stringify(data.investments)}`;
+        }
+    </script>
+</body>
+</html>
