@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kremerte Pølser - Register</title>
+</head>
+<body>
+    <h1>Kremerte Pølser - Register</h1>
+    <div>
+        <h2>Register</h2>
+        <input type="text" id="reg-username" placeholder="Username" required>
+        <input type="password" id="reg-password" placeholder="Password" required>
+    </div>
+    <button onclick="register()">Register</button>
+    <p>Already have an account? <a href="index.html">Login here</a></p>
+    <script>
+        let token = '';
+
+        async function register() {
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const response = await fetch('http://localhost:5000/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            alert(data.message);
+        }
+    </script>
+</body>
+</html>

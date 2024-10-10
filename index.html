@@ -8,17 +8,12 @@
 <body>
     <h1>Kremerte Pølser</h1>
     <div>
-        <h2>Register</h2>
-        <input type="text" id="reg-username" placeholder="Username">
-        <input type="password" id="reg-password" placeholder="Password">
-        <button onclick="register()">Register</button>
-    </div>
-    <div>
         <h2>Login</h2>
-        <input type="text" id="login-username" placeholder="Username">
-        <input type="password" id="login-password" placeholder="Password">
-        <button onclick="login()">Login</button>
+        <input type="text" id="login-username" placeholder="Username" required>
+        <input type="password" id="login-password" placeholder="Password" required>
     </div>
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
     <div id="investment-section">
         <h2>Invest</h2>
         <input type="text" id="share-name" placeholder="Share Name">
