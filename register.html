@@ -8,12 +8,16 @@
 </head>
 <body>
     <h1>Kremerte Pølser - Register</h1>
-    <div>
+    <div class="container">
         <h2>Register</h2>
-        <input type="text" id="reg-username" placeholder="Username" required>
-        <input type="password" id="reg-password" placeholder="Password" required>
+        <form action="dashboard.html" method="POST"> <!-- Change action to your backend script -->
+            <div>
+                <input type="text" id="reg-username" placeholder="Username" required>
+                <input type="password" id="reg-password" placeholder="Password" required>
+            </div>
+            <button onclick="register()">Register</button>
+        </form>
     </div>
-    <button onclick="register()">Register</button>
     <p>Already have an account? <a href="index.html">Login here</a></p>
     <script>
         let token = '';
