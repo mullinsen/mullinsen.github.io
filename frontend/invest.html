@@ -130,7 +130,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch portfolio');
+                    //throw new Error('Failed to fetch portfolio');
+                    alert("fail?")
                 }
 
                 const data = await response.json();
