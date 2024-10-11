@@ -18,7 +18,7 @@
         </div>
         <button onclick="login()">Login</button>
         <p id="error-message" class="error"></p>
-        <p id="forgot-password" class="hidden">Forgot password? <a href="forgot-password.html">Reset here</a></p>
+        <p>Forgot password? <a href="forgot-password.html">Reset here</a></p>
     </div>
     <!-- Re-add if users shall be able to register themselves
     <p>Don't have an account? <a href="register.html">Register here</a></p>
@@ -30,7 +30,6 @@
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
             const errorMessage = document.getElementById('error-message');
-            const forgotUsernameBtn = document.getElementById('forgot-password');
 
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/login', {
@@ -43,7 +42,6 @@
                 
                 if (!result.success) {
                     errorMessage.textContent = result.message;
-                    forgotUsernameBtn.classList.remove('hidden');
                 } else {
                     errorMessage.textContent = 'Successful login - but no more implemented..';
                 }

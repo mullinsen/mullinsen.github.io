@@ -93,7 +93,7 @@ app.post('/forgot-password', async (req, res) => {
 
         if (!user) {
             console.log('1.5');
-            return res.status(404).json({ success: false, message: 'Username does not exist or already has a password.' });
+            return res.status(404).json({ success: false, message: 'Username does not exist or already has a password. Contact admin.' });
         }
         console.log('2');
 
