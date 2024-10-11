@@ -5,12 +5,12 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors'); // Add CORS to allow cross-origin requests
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Database connection
 mongoose.set('strictQuery', false);
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000})
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
 
@@ -37,10 +37,16 @@ const User = mongoose.model('User', userSchema);
 // Register route
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
-    res.json({ message: 'User created successfully' });
+    const user = await User.findOne({ username });
+    if (user){
+        res.status(400).json({ error: 'User exists!' });
+    } else {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, password: hashedPassword });
+        await newUser.save();
+        res.json({ message: 'User created successfully. Return to login page.' });
+    }
+    
 });
 
 // Login route
@@ -49,7 +55,7 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ username });
     if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign({ userId: user._id }, 'secretkey');
-        res.json({ token });
+        res.status(400).json({ error: 'Login successful, but not implemented....' });
     } else {
         res.status(400).json({ error: 'Invalid credentials' });
     }
