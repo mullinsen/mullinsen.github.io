@@ -34,6 +34,7 @@ body {
 
 .container button:hover {
     background-color: #218838;
+    text-align: right;
 }
 
 h1 {
