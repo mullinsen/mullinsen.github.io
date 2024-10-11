@@ -117,9 +117,10 @@
     </div>
 
     <script>
+        console.log('Script starting');
         async function loadPortfolio() {
+            console.log('Starting');
             try {
-                console.log('Starting');
                 const token = localStorage.getItem('token');
                 if (!token) {
                     console.error('No token found, user might not be authenticated');
