@@ -19,7 +19,7 @@ body {
 .container input[type="text"],
 .container input[type="password"],
 .container button {
-    width: 100px;
+    width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     box-sizing: border-box;
