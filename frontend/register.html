@@ -18,7 +18,6 @@
         </div>
         <button onclick="register()">Register</button>
         <p id="error-message" class="error"></p>
-        <p id="forgot-password">Forgot password? <a href="forgot-password.html">Reset here</a></p>
     </div>
     <p>Already have an account? <a href="index.html">Login here</a></p>
     <script>
@@ -28,7 +27,6 @@
             const username = document.getElementById('reg-username').value;
             const password = document.getElementById('reg-password').value;
             const errorMessage = document.getElementById('error-message');
-            const forgotUsernameBtn = document.getElementById('forgot-password');
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/register', {
                     method: 'POST',
@@ -39,7 +37,6 @@
                 const result = await response.json();
                 if (!result.success) {
                     errorMessage.textContent = result.message;
-                    forgotUsernameBtn.classList.remove('hidden');
                 } else {
                     //window.location.href = '/login'; // Redirect to login on successful registration
                     alert('Registration successful. Return to login page');
