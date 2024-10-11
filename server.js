@@ -13,6 +13,8 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
 
+mongoose.set('strictQuery', false);
+
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(express.json());
