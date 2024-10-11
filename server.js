@@ -82,6 +82,31 @@ app.post('/login', async (req, res) => {
     res.json({ success: true, token });
 });
 
+// Route to handle forgotten password
+router.post('/forgot-password', async (req, res) => {
+    const { username, newPassword } = req.body;
+
+    try {
+        // Check if the user exists with an empty password
+        const user = await User.findOne({ username: username, password: '' });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Username does not exist or already has a password.' });
+        }
+
+        // Update the user's password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        user.password = hashedPassword; // Make sure to hash the password in a real app
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'Password has been reset successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+});
+
 // Middleware to authenticate user using JWT
 const authenticate = (req, res, next) => {
     const token = req.headers['authorization'];
