@@ -7,37 +7,42 @@ body {
 
 .container {
     max-width: 300px;
-    margin: auto;
+    margin: 50px auto;
+    border: 1px solid #ccc;
     padding: 20px;
     background: white;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.container label {
-    display: inline-block;
-    width: 100px;
-    text-align: right;
-    margin-right: 10px;
-}
-
+/* Aligning the form elements */
 .container input[type="text"],
-.container input[type="password"]
+.container input[type="password"],
 .container button {
-    width: 100%;
+    width: 100%; /* Full width inside the container */
     padding: 10px;
     margin-bottom: 15px;
     box-sizing: border-box;
 }
 
-.container p {
-    text-align: center;
-    margin-top: 10px;
+.container input[type="text"],
+.container input[type="password"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .container button {
-    background-color: #218838;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
     font-size: 16px;
+    border-radius: 5px;
+}
+
+.container button:hover {
+    background-color: #45a049;
 }
 
 h1 {
@@ -51,30 +56,6 @@ h2 {
 form {
     display: flex;
     flex-direction: column;
-}
-
-label {
-    margin-bottom: 5px;
-}
-
-input {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #218838;
 }
 
 p {
