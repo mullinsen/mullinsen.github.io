@@ -37,28 +37,49 @@ const User = mongoose.model('User', userSchema);
 // Register route
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (user){
-        res.status(400).json({ error: 'User exists!' });
-    } else {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
-        res.json({ message: 'User created successfully. Return to login page.' });
+    const userExists = await User.findOne({ username });
+    if (userExists) {
+        return res.status(400).json({
+            success: false,
+            message: 'Username already exists'
+        });
     }
-    
+
+    // Proceed with creating a new user
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({
+        username,
+        password: hashedPassword
+    });
+
+    await newUser.save();
+    res.json({ success: true, message: 'User registered successfully. Return to login page.' });
 });
 
 // Login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
-    if (user && (await bcrypt.compare(password, user.password))) {
-        const token = jwt.sign({ userId: user._id }, 'secretkey');
-        res.status(400).json({ error: 'Login successful, but not implemented....' });
-    } else {
-        res.status(400).json({ error: 'Invalid credentials' });
+    if (!user) {
+        return res.status(400).json({
+            success: false,
+            message: 'Username not is use!'
+        });
+    } 
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        return res.status(400).json({
+            success: false,
+            message: 'Incorrect password'
+        });
     }
+
+    // Generate JWT token or session, etc.
+    const token = jwt.sign({ id: user._id }, 'secretKey');
+    res.json({ success: true, token });
 });
 
 // Middleware to authenticate user using JWT
