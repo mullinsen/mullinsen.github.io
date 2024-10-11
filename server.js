@@ -87,20 +87,25 @@ app.post('/forgot-password', async (req, res) => {
     const { username, newPassword } = req.body;
 
     try {
+        console.log('1');
         // Check if the user exists with an empty password
         const user = await User.findOne({ username: username, password: '' });
 
         if (!user) {
+            console.log('1.5');
             return res.status(404).json({ success: false, message: 'Username does not exist or already has a password.' });
         }
+        console.log('2');
 
         // Update the user's password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         user.password = hashedPassword; // Make sure to hash the password in a real app
+        console.log('3');
         await user.save();
-
+        console.log('4');
         res.status(200).json({ success: true, message: 'Password has been reset successfully.' });
+        console.log('5');
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
