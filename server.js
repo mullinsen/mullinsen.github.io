@@ -22,7 +22,7 @@ app.use(express.json());
 const userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: { type: String },
-    coins: { type: Number, default: 1000 },
+    coins: { type: Number, default: 2000 },
     investments: [
         {
             share: String,

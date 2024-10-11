@@ -3,50 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kremerte Pølser - Invest</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Kremerte Pølser - Investment Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .section ul {
+            list-style: none;
+            padding: 0;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .section ul li {
+            background-color: #e8f5e9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: 18px;
+            border: 2px solid #4CAF50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
 </head>
 <body>
-    <h1>Kremerte Pølser - Invest</h1>
-    <div id="investment-section">
-        <h2>Invest</h2>
-        <input type="text" id="share-name" placeholder="Share Name">
-        <input type="number" id="investment-amount" placeholder="Investment Amount">
-        <button onclick="invest()">Invest</button>
+
+    <div class="container">
+        <h1>Investing Dashboard</h1>
+
+        <!-- Current Coin Inventory Section -->
+        <div class="section">
+            <h2>Your Coins</h2>
+            <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for investment.</p>
+        </div>
+
+        <!-- Current Investments Section -->
+        <div class="section">
+            <h2>Your Investments</h2>
+            <ul id="investment-list">
+                <li>Loading investments...</li>
+            </ul>
+        </div>
+
+        <!-- Back to Home -->
+        <a href="home.html" class="back-link">Back to Home</a>
+
+        <footer>
+            © 2024 Kremerte Pølser. All rights reserved.
+        </footer>
     </div>
-    <div>
-        <h2>Portfolio</h2>
-        <button onclick="getPortfolio()">Get Portfolio</button>
-        <div id="portfolio"></div>
-    </div>
+
     <script>
-        let token = '';
+        async function loadPortfolio() {
+            try {
+                // Fetch the user's portfolio from the backend
+                const response = await fetch('https://mullinsen-github-io.onrender.com/portfolio', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Assuming you use JWT for authentication
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Modify this based on your auth strategy
+                    }
+                });
 
-        async function invest() {
-            const share = document.getElementById('share-name').value;
-            const amount = document.getElementById('investment-amount').value;
-            const response = await fetch('https://mullinsen-github-io.onrender.com/invest', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                body: JSON.stringify({ share, amount })
-            });
-            const data = await response.json();
-            alert(data.message);
-        }
-
-        async function getPortfolio() {
-            const response = await fetch('https://mullinsen-github-io.onrender.com/portfolio', {
-                method: 'GET',
-                headers: {
-                    'Authorization': token
+                if (!response.ok) {
+                    alert('Failed to fetch portfolio');
                 }
-            });
-            const data = await response.json();
-            document.getElementById('portfolio').innerHTML = `Coins: ${data.coins} <br> Investments: ${JSON.stringify(data.investments)}`;
+
+                const data = await response.json();
+
+                // Update the coin inventory
+                document.getElementById('coin-inventory').textContent = data.coins;
+
+                // Update the investment list
+                const investmentList = document.getElementById('investment-list');
+                investmentList.innerHTML = ''; // Clear the existing content
+
+                if (data.investments && data.investments.length > 0) {
+                    data.investments.forEach(investment => {
+                        const li = document.createElement('li');
+                        li.textContent = `${investment.amount} coins in ${investment.share}`;
+                        investmentList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No investments yet';
+                    investmentList.appendChild(li);
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('coin-inventory').textContent = 'Error loading coins';
+                document.getElementById('investment-list').innerHTML = '<li>Error loading investments</li>';
+            }
         }
+
+        // Load the portfolio when the page loads
+        window.onload = loadPortfolio;
     </script>
+
 </body>
 </html>
