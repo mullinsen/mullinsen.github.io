@@ -39,7 +39,7 @@
                 if (!result.success) {
                     errorMessage.textContent = result.message;
                 } else {
-                    errorMessage.textContent = 'Successful login - but no more implemented..';
+                    window.location.href = "home.html";
                 }
             }
             catch (error) {
