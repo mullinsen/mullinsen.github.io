@@ -117,33 +117,8 @@
     </div>
 
     <script>
-        console.log('Script starting');
         async function loadPortfolio() {
-            document.getElementById('coin-inventory').textContent = 'Starting';
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    document.getElementById('coin-inventory').textContent = 'No token found, user might not be authenticated';
-                    // Optionally redirect to login page or show an error message
-                } else {
-                    document.getElementById('coin-inventory').textContent = 'fetching';
-                    // Proceed to fetch portfolio
-                    fetch('https://mullinsen-github-io.onrender.com/portfolio', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Portfolio data:', data);
-                    })
-                    .catch(error => {
-                        document.getElementById('coin-inventory').textContent = 'Error fetching portfolio:';
-                    });
-                }
-
                 // Fetch the user's portfolio from the backend
                 const response = await fetch('https://mullinsen-github-io.onrender.com/portfolio', {
                     method: 'GET',
@@ -151,7 +126,6 @@
                         'Content-Type': 'application/json',
                         // Assuming you use JWT for authentication
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Modify this based on your auth strategy
-                        //'Authorization': localStorage.getItem('token')
                     }
                 });
 
@@ -162,28 +136,28 @@
                 const data = await response.json();
 
                 // Update the coin inventory
-                //document.getElementById('coin-inventory').textContent = data.coins;
-//
-                //// Update the investment list
-                //const investmentList = document.getElementById('investment-list');
-                //investmentList.innerHTML = ''; // Clear the existing content
-//
-                //if (data.investments && data.investments.length > 0) {
-                //    data.investments.forEach(investment => {
-                //        const li = document.createElement('li');
-                //        li.textContent = `${investment.amount} coins in ${investment.share}`;
-                //        investmentList.appendChild(li);
-                //    });
-                //} else {
-                //    const li = document.createElement('li');
-                //    li.textContent = 'No investments yet';
-                //    investmentList.appendChild(li);
-                //}
+                document.getElementById('coin-inventory').textContent = data.coins;
+
+                // Update the investment list
+                const investmentList = document.getElementById('investment-list');
+                investmentList.innerHTML = ''; // Clear the existing content
+
+                if (data.investments && data.investments.length > 0) {
+                    data.investments.forEach(investment => {
+                        const li = document.createElement('li');
+                        li.textContent = `${investment.amount} coins in ${investment.share}`;
+                        investmentList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No investments yet';
+                    investmentList.appendChild(li);
+                }
 
             } catch (error) {
-                //console.error(error);
-                //document.getElementById('coin-inventory').textContent = 'Error loading coins';
-                //document.getElementById('investment-list').innerHTML = '<li>Error loading investments</li>';
+                console.error(error);
+                document.getElementById('coin-inventory').textContent = 'Error loading coins';
+                document.getElementById('investment-list').innerHTML = '<li>Error loading investments</li>';
             }
         }
 
