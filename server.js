@@ -83,7 +83,7 @@ app.post('/login', async (req, res) => {
 });
 
 // Route to handle forgotten password
-router.post('/forgot-password', async (req, res) => {
+app.post('/forgot-password', async (req, res) => {
     const { username, newPassword } = req.body;
 
     try {
