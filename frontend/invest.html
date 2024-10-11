@@ -125,7 +125,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                         // Assuming you use JWT for authentication
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Modify this based on your auth strategy
+                        'Authorization': localStorage.getItem('token')
                     }
                 });
 
