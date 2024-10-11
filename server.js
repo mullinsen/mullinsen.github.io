@@ -99,7 +99,7 @@ app.post('/forgot-password', async (req, res) => {
 
         // Update the user's password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.password = hashedPassword; // Make sure to hash the password in a real app
         console.log('3');
         await user.save();
