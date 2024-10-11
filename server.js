@@ -9,11 +9,10 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Database connection
+mongoose.set('strictQuery', false);
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
-
-mongoose.set('strictQuery', false);
 
 // Middleware
 app.use(cors()); // Enable CORS
