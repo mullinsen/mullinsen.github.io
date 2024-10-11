@@ -39,6 +39,7 @@
                 if (!result.success) {
                     errorMessage.textContent = result.message;
                 } else {
+                    localStorage.setItem('token', result.token);
                     window.location.href = "home.html";
                 }
             }
