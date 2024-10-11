@@ -54,3 +54,7 @@ button:hover {
 p {
     text-align: center;
 }
+
+.hidden {
+    display: none;
+}
