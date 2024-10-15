@@ -73,3 +73,16 @@ p {
 .success {
     color: green;
 }
+
+/* Responsive design for mobile screens */
+@media (max-width: 600px) {
+    .container {
+        width: 90%; /* Use 90% of the screen width on mobile */
+        padding: 10px;
+    }
+
+    input[type="text"], input[type="password"], button {
+        font-size: 18px; /* Increase font size for better readability */
+        padding: 12px; /* Adjust padding for mobile */
+    }
+}
