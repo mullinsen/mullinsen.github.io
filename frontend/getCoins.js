@@ -1,6 +1,6 @@
 async function loadCoins() {
+    alert('loading coins!2');
     try {
-        alert('loading coins!');
         // Fetch the user's portfolio from the backend
         const token = localStorage.getItem('token');
         if (!token) {
@@ -36,6 +36,6 @@ async function loadCoins() {
         alert('FAILED loading coins!');
     }
 }
-
+alert('loading coins!1');
 // Load the coins when the page loads
 window.onload = loadCoins;
