@@ -62,6 +62,7 @@
             padding: 15px; /* Padding around each item */
             border-bottom: 1px solid #ddd; /* Divider between items */
             transition: background 0.3s; /* Smooth background change */
+            position: relative; /* For absolute positioning of the button */
         }
 
         .completed-users li:hover {
@@ -73,13 +74,18 @@
         }
 
         .verify-btn {
-            padding: 10px 15px; /* Button padding */
+            padding: 5px 10px; /* Smaller button padding */
             background: #4CAF50; /* Green background */
             color: white; /* White text */
             border: none; /* Remove border */
-            border-radius: 5px; /* Rounded corners for button */
+            border-radius: 3px; /* Slightly rounded corners for button */
             cursor: pointer; /* Pointer cursor on hover */
             transition: background 0.3s; /* Smooth background change */
+            font-size: 0.8em; /* Smaller font size */
+            position: absolute; /* Position button absolutely */
+            right: 15px; /* Align to the right with some padding */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for vertical alignment */
         }
 
         .verify-btn:hover {
