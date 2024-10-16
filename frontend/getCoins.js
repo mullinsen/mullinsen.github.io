@@ -1,5 +1,5 @@
 async function loadCoins() {
-    alert('loading coins!2');
+    alert('loading coins!3');
     try {
         // Fetch the user's portfolio from the backend
         const token = localStorage.getItem('token');
