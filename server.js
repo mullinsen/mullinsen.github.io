@@ -79,7 +79,6 @@ app.post('/login', async (req, res) => {
 
     // Generate JWT token or session, etc.
     const token = jwt.sign({ id: user._id }, 'secretKey');
-    console.log("token: ", token);
     res.json({ success: true, token });
 });
 
@@ -112,15 +111,19 @@ const authenticate = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log("Incorrect header!");
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
 
     const token = authHeader.split(' ')[1];  // Extract the token part
     try {
+        console.log("trying!");
         const decoded = jwt.verify(token, 'secretkey');
+        console.log("verified?");
         req.userId = decoded.userId;
         next();
     } catch (err) {
+        console.log("invalid token!");
         res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 };
@@ -147,6 +150,7 @@ app.post('/invest', authenticate, async (req, res) => {
 // Get user investments
 app.get('/portfolio', authenticate, async (req, res) => {
     const user = await User.findById(req.userId);
+    console.log("portfolio coins: ", user.coins);
     res.json({ coins: user.coins, investments: user.investments });
  });
 
