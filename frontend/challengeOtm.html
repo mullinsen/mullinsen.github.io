@@ -118,9 +118,10 @@
             // Show admin section for challenge host
             const isChallengeHost = localStorage.getItem('isChallengeHost') === 'true';
             if (isChallengeHost) {
-                alert("You are the Challenge Host! Enter or edit the challenge.");
                 document.getElementById('admin-section').style.display = 'block';
             }
+
+            const loggedInUserId = localStorage.getItem('userId');
 
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
@@ -155,9 +156,11 @@
                 } else {
                     challenge.completedBy.forEach(user => {
                         const listItem = document.createElement('li');
+                        const isOwnClaim = user.userId._id === loggedInUserId; // Check if it's the logged-in user's claim
+
                         listItem.innerHTML = `
-                            <span>${user.userId.username}</span> <!-- Display the username instead of userId -->
-                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')">
+                            <span>${user.userId.username}</span>
+                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')" ${isOwnClaim ? 'disabled' : ''}>
                                 ${user.verified ? 'Verified' : 'Verify'}
                             </button>
                         `;
@@ -211,7 +214,6 @@
                     throw new Error('Failed to verify challenge completion');
                 }
 
-                alert('Challenge completion verified!');
                 loadChallenge(); // Refresh the page
             } catch (error) {
                 console.error('Error verifying completion:', error);
@@ -232,7 +234,6 @@
                     throw new Error('Failed to claim challenge');
                 }
 
-                alert('Challenge claimed successfully!');
                 loadChallenge(); // Reload challenge after claiming
             } catch (error) {
                 console.error('Error claiming challenge:', error);

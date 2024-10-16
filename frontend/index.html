@@ -39,6 +39,7 @@
                 if (!result.success) {
                     errorMessage.textContent = result.message;
                 } else {
+                    localStorage.setItem('userId', result.userId);
                     localStorage.setItem('token', result.token);
                     localStorage.setItem('isChallengeHost', result.isChallengeHost);
                     window.location.href = "home.html";

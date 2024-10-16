@@ -96,7 +96,9 @@ app.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id, isChallengeHost: user.isChallengeHost }, 'secretKey');
-    res.json({ success: true, token, isChallengeHost: user.isChallengeHost });
+    res.json({
+        success: true, token, isChallengeHost: user.isChallengeHost,
+        userId: user._id });
 });
 
 // Route to handle forgotten password
