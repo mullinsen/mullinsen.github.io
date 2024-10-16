@@ -262,13 +262,15 @@ app.post('/challenge', authenticate, isChallengeHost, async (req, res) => {
 // Get current challenge
 app.get('/challenge', authenticate, async (req, res) => {
     try {
-        const challenge = await Challenge.findOne();
+        // Use populate to retrieve the username of users who completed the challenge
+        const challenge = await Challenge.findOne().populate('completedBy.userId', 'username');
         if (!challenge) return res.status(404).json({ error: 'No challenge found' });
         res.json(challenge);
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 // Mark a user as having completed the challenge
 app.post('/challenge/complete', authenticate, async (req, res) => {

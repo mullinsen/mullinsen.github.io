@@ -121,7 +121,7 @@
                 alert("You are the Challenge Host! Enter or edit the challenge.");
                 document.getElementById('admin-section').style.display = 'block';
             }
-            alert("You should get this far at least.");
+
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
                     method: 'GET',
@@ -136,7 +136,7 @@
                 }
 
                 const challenge = await response.json();
-                alert("Response OK");
+                
                 // Populate challenge details
                 const challengeDetails = document.getElementById('challenge-details');
                 challengeDetails.innerHTML = `
@@ -144,26 +144,29 @@
                     <p>${challenge.description}</p>
                     <p>Reward: ${challenge.reward} coins</p>
                 `;
-                alert("All OK 1");
+                
                 // Populate users who completed the challenge
                 const completedUsersList = document.getElementById('completed-users-list');
                 completedUsersList.innerHTML = ''; // Clear the list
-                alert("All OK 2");
-                challenge.completedBy.forEach(user => {
-                    alert("All OK USER");
-                    const listItem = document.createElement('li');
-                    alert("All OK ELEMENT");
-                    listItem.innerHTML = `
-                        <span>${user.userId}</span>
-                        <button class="verify-btn" onclick="verifyCompletion('${user.userId}')">${user.verified ? 'Verified' : 'Verify'}</button>
-                    `;
-                    alert("All OK HTML");
-                    completedUsersList.appendChild(listItem);
-                    alert("All OK APPEND");
-                });
+                
+                // Check if there are completed users
+                if (challenge.completedBy.length === 0) {
+                    completedUsersList.innerHTML = '<li>No Kremerte Pølser have completed yet!</li>'; // Display message if empty
+                } else {
+                    challenge.completedBy.forEach(user => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span>${user.userId.username}</span> <!-- Display the username instead of userId -->
+                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')">
+                                ${user.verified ? 'Verified' : 'Verify'}
+                            </button>
+                        `;
+                        completedUsersList.appendChild(listItem);
+                    });
+                }
             } catch (error) {
                 console.error('Error loading challenge:', error);
-                alert("Shit again.");
+                alert("Shit. Something went wrong.");
             }
         }
 
