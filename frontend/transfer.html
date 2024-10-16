@@ -41,6 +41,7 @@
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
         }
 
         button {
@@ -79,7 +80,10 @@
 
     <div class="container">
         <h1>Transfer Coins</h1>
-
+        <div class="section">
+            <h2>Transfer coins to a Kremert Pølse</h2>
+            <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for transfer.</p>
+        </div>
         <form id="transfer-form">
             <select id="recipient-username" required>
                 <option value="" disabled selected>Select a recipient</option>
