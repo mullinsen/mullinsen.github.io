@@ -155,6 +155,18 @@ function getShareValue(share) {
     return Math.random() * 100; // Replace with real stock value
 }
 
+app.get('/users', authenticate, async (req, res) => {
+    try {
+        const users = await User.find({}, 'username'); // Only fetch usernames
+        const filteredUsers = users.filter(user => user._id.toString() !== req.userId); // Exclude the current user
+        res.json(filteredUsers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch users' });
+    }
+});
+
+
 app.post('/transfer', authenticate, async (req, res) => {
     const { recipientUsername, transferAmount } = req.body;
     

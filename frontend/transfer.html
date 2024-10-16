@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nb">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
             margin-bottom: 20px;
         }
 
-        input {
+        select, input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -80,7 +80,11 @@
         <h1>Transfer Coins</h1>
 
         <form id="transfer-form">
-            <input type="text" id="recipient-username" placeholder="Recipient Username" required>
+            <select id="recipient-username" required>
+                <option value="" disabled selected>Select a recipient</option>
+                <!-- Recipients will be populated here -->
+            </select>
+
             <input type="number" id="transfer-amount" placeholder="Amount to Transfer" required>
             <button type="submit">Transfer Coins</button>
         </form>
@@ -94,6 +98,40 @@
     </div>
 
     <script>
+        // Fetch users from the backend and populate the recipient dropdown
+        async function loadUsers() {
+            try {
+                const response = await fetch('https://mullinsen-github-io.onrender.com/users', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming you're using JWT for authentication
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+                const recipientSelect = document.getElementById('recipient-username');
+
+                users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.username;
+                    option.textContent = user.username;
+                    recipientSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('error-message').textContent = 'Error loading users';
+            }
+        }
+
+        // Call loadUsers to populate the dropdown when the page loads
+        window.onload = loadUsers;
+
         document.getElementById('transfer-form').addEventListener('submit', async function(event) {
             event.preventDefault();  // Prevent form submission from reloading the page
 
