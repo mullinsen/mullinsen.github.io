@@ -1,5 +1,6 @@
 async function loadCoins() {
     try {
+        alert('loading coins!');
         // Fetch the user's portfolio from the backend
         const token = localStorage.getItem('token');
         if (!token) {
@@ -16,6 +17,7 @@ async function loadCoins() {
 
         if (!response.ok) {
             throw new Error('Failed to fetch portfolio');
+            alert('failed loading coins!');
         }
 
         const data = await response.json();
@@ -26,10 +28,12 @@ async function loadCoins() {
             alert('No Coin element on page!');
             return;
         }
+        alert('Coin element on page!');
         coinElement.textContent = data.coins;
 
     } catch (error) {
         console.error(error);
+        alert('FAILED loading coins!');
     }
 }
 
