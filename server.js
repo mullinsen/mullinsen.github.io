@@ -169,10 +169,10 @@ app.get('/users', authenticate, async (req, res) => {
 
 app.post('/transfer', authenticate, async (req, res) => {
     const { recipientUsername, transferAmount } = req.body;
-    
-    // Validate inputs
-    if (!recipientUsername || !transferAmount || transferAmount <= 0) {
-        return res.status(400).json({ message: 'Invalid input' });
+
+     // Validate transferAmount is a number and greater than 0
+     if (!recipientUsername || !transferAmount || typeof transferAmount !== 'number' || transferAmount <= 0) {
+        return res.status(400).json({ message: 'Invalid transfer input' });
     }
 
     const sender = await User.findById(req.userId);
