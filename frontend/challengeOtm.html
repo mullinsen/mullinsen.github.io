@@ -44,6 +44,53 @@
             margin: 10px 0;
         }
 
+        .completed-users {
+            list-style: none; /* Remove default list styling */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+            max-width: 600px; /* Limit width */
+            background: #f9f9f9; /* Light background color */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            overflow: hidden; /* Clip inner content */
+        }
+
+        .completed-users li {
+            display: flex; /* Flex layout for alignment */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */
+            padding: 15px; /* Padding around each item */
+            border-bottom: 1px solid #ddd; /* Divider between items */
+            transition: background 0.3s; /* Smooth background change */
+        }
+
+        .completed-users li:hover {
+            background: #f1f1f1; /* Change background on hover */
+        }
+
+        .completed-users li:last-child {
+            border-bottom: none; /* Remove border from last item */
+        }
+
+        .verify-btn {
+            padding: 10px 15px; /* Button padding */
+            background: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners for button */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background 0.3s; /* Smooth background change */
+        }
+
+        .verify-btn:hover {
+            background: #45a049; /* Darker green on hover */
+        }
+
+        .verify-btn:disabled {
+            background: #ccc; /* Gray background for disabled button */
+            cursor: not-allowed; /* Not-allowed cursor for disabled */
+        }
+
         .admin-section {
             margin-top: 30px;
             background-color: #f5f5f5;
@@ -86,7 +133,7 @@
 
         <div class="user-list">
             <h2>Users who completed the challenge</h2>
-            <ul id="completed-users-list">
+            <ul id="completed-users-list" class="completed-users">
                 <!-- List of users will be populated here -->
             </ul>
         </div>
@@ -160,7 +207,7 @@
 
                         listItem.innerHTML = `
                             <span>${user.userId.username}</span>
-                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')" ${isOwnClaim ? 'disabled' : ''}>
+                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')" style="${isOwnClaim ? 'display: none;' : 'display: inline-block;'}">
                                 ${user.verified ? 'Verified' : 'Verify'}
                             </button>
                         `;
