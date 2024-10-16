@@ -105,38 +105,10 @@
         </footer>
     </div>
     <script src="auth.js"></script>
-    <script src="getCoins.js"></script>
+    <!--script src="getCoins.js"></script-->
+    <script src="loadUserInformation.js"></script>
     <script>
-        // Fetch users from the backend and populate the recipient dropdown
-        async function loadUsers() {
-            try {
-                const response = await fetch('https://mullinsen-github-io.onrender.com/users', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming you're using JWT for authentication
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
-                }
-
-                const users = await response.json();
-                const recipientSelect = document.getElementById('recipient-username');
-
-                users.forEach(user => {
-                    const option = document.createElement('option');
-                    option.value = user.username;
-                    option.textContent = user.username;
-                    recipientSelect.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error('Error loading users:', error);
-                document.getElementById('error-message').textContent = 'Error loading users';
-            }
-        }
+        
 
         document.getElementById('transfer-form').addEventListener('submit', async function(event) {
             event.preventDefault();  // Prevent form submission from reloading the page
@@ -180,6 +152,7 @@
             } catch (error) {
                 errorMessage.textContent = 'Error transferring coins. Please try again later.';
             }
+            loadCoins();
         });
 
         async function onLoadCalls() {
