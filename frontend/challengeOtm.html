@@ -91,6 +91,20 @@
             </ul>
         </div>
 
+        <!--div class="section">
+            <h2>Transfer coins to another Hot Dog</h2>
+            <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for transfer.</p>
+        </div>
+        <form id="transfer-form">
+            <select id="recipient-username" required>
+                <option value="" disabled selected>Select a recipient</option-->
+                <!-- Recipients will be populated here -->
+            <!--/select>
+
+            <input type="number" id="transfer-amount" placeholder="Amount to Transfer" required>
+            <button type="submit">Transfer Coins</button>
+        </form-->
+
 
         <div class="admin-section" id="admin-section">
             <h2>Challenge Host: Update Challenge</h2>
@@ -109,16 +123,15 @@
     </div>
         
         
-
+    <script src="loadUserInformation.js"></script>
     <script>
         async function loadChallenge() {
             // Show admin section for challenge host
             const isChallengeHost = localStorage.getItem('isChallengeHost') === 'true';
             if (isChallengeHost) {
-                alert("You are Challenge host! Enter or edit the challenge.");
+                alert("You are the Challenge Host! Enter or edit the challenge.");
                 document.getElementById('admin-section').style.display = 'block';
             }
-            alert("You are not challenge host! ");
 
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
@@ -142,21 +155,24 @@
                     <p>${challenge.description}</p>
                     <p>Reward: ${challenge.reward} coins</p>
                 `;
-
+                alert("All OK 1");
                 // Populate users who completed the challenge
                 const completedUsersList = document.getElementById('completed-users-list');
                 completedUsersList.innerHTML = ''; // Clear the list
-
+                alert("All OK 2");
                 challenge.completedBy.forEach(user => {
+                    alert("All OK USER");
                     const listItem = document.createElement('li');
+                    alert("All OK ELEMENT");
                     listItem.innerHTML = `
                         <span>${user.userId}</span>
                         <button class="verify-btn" onclick="verifyCompletion('${user.userId}')">${user.verified ? 'Verified' : 'Verify'}</button>
                     `;
+                    alert("All OK HTML");
                     completedUsersList.appendChild(listItem);
+                    alert("All OK APPEND");
                 });
             } catch (error) {
-                alert("Something went wrong!");
                 console.error('Error loading challenge:', error);
             }
         }
@@ -208,8 +224,15 @@
                 console.error('Error verifying completion:', error);
             }
         }
+        
+        async function onLoadCalls() {
+            checkAuthentication();
+            loadChallenge();
+            loadUsers();
+        }
 
-        window.onload = loadChallenge;
+        // Call onLoadCalls on load
+        window.onload = onLoadCalls;
     </script>
 </body>
 </html>
