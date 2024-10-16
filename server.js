@@ -197,5 +197,16 @@ app.post('/transfer', authenticate, async (req, res) => {
     res.json({ message: 'Transfer successful' });
 });
 
+// Get all users and sort by coins (descending order)
+app.get('/standings', authenticate, async (req, res) => {
+    try {
+        const users = await User.find().sort({ coins: -1 }); // Sorting in descending order by coins
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve standings' });
+    }
+});
+
+
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

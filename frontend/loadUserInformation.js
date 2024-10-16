@@ -88,7 +88,7 @@ async function loadUsers() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming you're using JWT for authentication
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
         });
 
