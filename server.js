@@ -302,6 +302,7 @@ app.post('/challenge/complete', authenticate, async (req, res) => {
 // Verify that a user has completed the challenge
 app.post('/challenge/verify', authenticate, async (req, res) => {
     const { userId } = req.body;
+    
     try {
         const challenge = await Challenge.findOne();
         if (!challenge) return res.status(404).json({ error: 'No challenge found' });
@@ -309,10 +310,19 @@ app.post('/challenge/verify', authenticate, async (req, res) => {
         const completion = challenge.completedBy.find(c => c.userId.toString() === userId);
         if (!completion) return res.status(404).json({ error: 'User has not completed the challenge' });
 
+        // Verify completion
         completion.verified = true;
-        await challenge.save();
+        
+        // Award coins to the user
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
-        res.json({ message: 'Challenge completion verified for the user' });
+        user.coins += challenge.reward; // Award the reward coins
+        await user.save(); // Save the updated user
+
+        await challenge.save(); // Save the updated challenge
+
+        res.json({ message: 'Challenge completion verified for the user', awardedCoins: challenge.reward });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
