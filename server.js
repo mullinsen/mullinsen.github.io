@@ -34,6 +34,22 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Challenge Schema
+const challengeSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    reward: Number, // Coins the user can receive for completing the challenge
+    completedBy: [
+        {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            verified: { type: Boolean, default: false } // True if another user verified completion
+        }
+    ]
+});
+
+const Challenge = mongoose.model('Challenge', challengeSchema);
+
+
 // Register route
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -204,6 +220,55 @@ app.get('/standings', authenticate, async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve standings' });
+    }
+});
+
+// Get current challenge
+app.get('/challenge', authenticate, async (req, res) => {
+    try {
+        const challenge = await Challenge.findOne();
+        if (!challenge) return res.status(404).json({ error: 'No challenge found' });
+        res.json(challenge);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Mark a user as having completed the challenge
+app.post('/challenge/complete', authenticate, async (req, res) => {
+    const { userId } = req.body;
+    try {
+        const challenge = await Challenge.findOne();
+        if (!challenge) return res.status(404).json({ error: 'No challenge found' });
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        challenge.completedBy.push({ userId: user._id, verified: false });
+        await challenge.save();
+
+        res.json({ message: 'User marked as completed the challenge' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Verify that a user has completed the challenge
+app.post('/challenge/verify', authenticate, async (req, res) => {
+    const { userId } = req.body;
+    try {
+        const challenge = await Challenge.findOne();
+        if (!challenge) return res.status(404).json({ error: 'No challenge found' });
+
+        const completion = challenge.completedBy.find(c => c.userId.toString() === userId);
+        if (!completion) return res.status(404).json({ error: 'User has not completed the challenge' });
+
+        completion.verified = true;
+        await challenge.save();
+
+        res.json({ message: 'Challenge completion verified for the user' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
