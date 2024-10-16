@@ -149,10 +149,12 @@
                 });
 
                 // Show admin section for challenge host
-                const isAdmin = localStorage.getItem('isChallengeHost') === 'true';
+                const isChallengeHost = localStorage.getItem('isChallengeHost') === 'true';
                 if (isChallengeHost) {
+                    alert("You are Challenge host! Enter or edit the challenge.");
                     document.getElementById('admin-section').style.display = 'block';
                 }
+                alert("You are not challenge host!: ", isChallengeHost);
             } catch (error) {
                 console.error('Error loading challenge:', error);
             }
