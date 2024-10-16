@@ -107,6 +107,24 @@ app.post('/forgot-password', async (req, res) => {
     }
 });
 
+// Middleware to authenticate user using JWT
+const authenticate = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];  // Extract the token part
+    try {
+        const decoded = jwt.verify(token, 'secretkey');
+        req.userId = decoded.userId;
+        next();
+    } catch (err) {
+        res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+};
+
 // Investment route
 app.post('/invest', authenticate, async (req, res) => {
     const { share, amount } = req.body; // e.g., { share: 'AAPL', amount: 100 }
@@ -125,24 +143,6 @@ app.post('/invest', authenticate, async (req, res) => {
         res.status(400).json({ error: 'Insufficient coins' });
     }
 });
-
-// Middleware to authenticate user using JWT
-const authenticate = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized: No token provided' });
-    }
-
-    const token = authHeader.split(' ')[1];  // Extract the token part
-    try {
-        const decoded = jwt.verify(token, 'secretkey');
-        req.userId = decoded.userId;
-        next();
-    } catch (err) {
-        res.status(401).json({ error: 'Unauthorized: Invalid token' });
-    }
-};
 
 // Get user investments
 app.get('/portfolio', authenticate, async (req, res) => {

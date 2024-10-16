@@ -137,6 +137,11 @@
                     }
                 });
 
+                if (!response.ok) {
+                    //throw new Error('Failed to fetch portfolio');
+                    alert("fail?");
+                }
+
                 const data = await response.json();
 
                 // Update the coin inventory
