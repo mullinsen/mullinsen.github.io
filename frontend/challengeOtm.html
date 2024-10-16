@@ -112,6 +112,14 @@
 
     <script>
         async function loadChallenge() {
+            // Show admin section for challenge host
+            const isChallengeHost = localStorage.getItem('isChallengeHost') === 'true';
+            if (isChallengeHost) {
+                alert("You are Challenge host! Enter or edit the challenge.");
+                document.getElementById('admin-section').style.display = 'block';
+            }
+            alert("You are not challenge host! ");
+
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
                     method: 'GET',
@@ -147,15 +155,8 @@
                     `;
                     completedUsersList.appendChild(listItem);
                 });
-
-                // Show admin section for challenge host
-                const isChallengeHost = localStorage.getItem('isChallengeHost') === 'true';
-                if (isChallengeHost) {
-                    alert("You are Challenge host! Enter or edit the challenge.");
-                    document.getElementById('admin-section').style.display = 'block';
-                }
-                alert("You are not challenge host!: ", isChallengeHost);
             } catch (error) {
+                alert("Something went wrong!");
                 console.error('Error loading challenge:', error);
             }
         }

@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: { type: String },
     coins: { type: Number, default: 2000 },
-    isChallengeHost: { type: Boolean, default: false },
     investments: [
         {
             share: String,
@@ -31,6 +30,7 @@ const userSchema = new mongoose.Schema({
             value: Number, // Current value of the investment
         }
     ],
+    isChallengeHost: { type: Boolean, default: false }
 });
 
 const User = mongoose.model('User', userSchema);
