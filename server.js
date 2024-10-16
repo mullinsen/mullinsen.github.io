@@ -272,13 +272,18 @@ app.get('/challenge', authenticate, async (req, res) => {
 
 // Mark a user as having completed the challenge
 app.post('/challenge/complete', authenticate, async (req, res) => {
-    const { userId } = req.body;
     try {
         const challenge = await Challenge.findOne();
         if (!challenge) return res.status(404).json({ error: 'No challenge found' });
 
-        const user = await User.findById(userId);
+        const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
+
+        // Check if the user has already claimed completion
+        const hasCompleted = challenge.completedBy.some(c => c.userId.toString() === req.userId.toString());
+        if (hasCompleted) {
+            return res.status(400).json({ message: 'User has already claimed the challenge' });
+        }
 
         challenge.completedBy.push({ userId: user._id, verified: false });
         await challenge.save();
@@ -288,6 +293,7 @@ app.post('/challenge/complete', authenticate, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 // Verify that a user has completed the challenge
 app.post('/challenge/verify', authenticate, async (req, res) => {
