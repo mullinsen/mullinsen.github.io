@@ -76,13 +76,41 @@ p {
 
 /* Responsive design for mobile screens */
 @media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
     .container {
         width: 90%; /* Use 90% of the screen width on mobile */
-        padding: 10px;
+        padding: 20px;
     }
 
     input[type="text"], input[type="password"], button {
-        font-size: 18px; /* Increase font size for better readability */
+        font-size: 24px; /* Increase font size for better readability */
         padding: 12px; /* Adjust padding for mobile */
+    }
+
+    h1 {
+        font-size: 24px; /* Adjust font size for mobile */
+    }
+
+    .section h2 {
+        font-size: 20px; /* Adjust font size for mobile */
+    }
+
+    .section p,
+    .section ul {
+        font-size: 16px; /* Adjust font size for mobile */
+    }
+
+    .back-link {
+        font-size: 16px; /* Adjust button font size for mobile */
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .nav-links a {
+        width: 100%; /* Make links full width on smaller screens */
+        padding: 10px;
+        font-size: 16px;
     }
 }
