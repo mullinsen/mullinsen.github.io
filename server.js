@@ -118,7 +118,7 @@ const authenticate = (req, res, next) => {
     const token = authHeader.split(' ')[1];  // Extract the token part
     try {
         console.log("trying!");
-        const decoded = jwt.verify(token, 'secretkey');
+        const decoded = jwt.verify(token, 'secretKey');
         console.log("verified?");
         req.userId = decoded.userId;
         next();
