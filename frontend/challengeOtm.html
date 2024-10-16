@@ -44,37 +44,34 @@
             margin: 10px 0;
         }
 
-        .user-list {
-            margin: 20px 0;
+        .admin-section {
+            margin-top: 30px;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
         }
 
-        .user-list h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .user-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .user-list li {
+        .admin-section input,
+        .admin-section textarea {
+            width: 100%;
             padding: 10px;
-            border-bottom: 1px solid #ccc;
-            display: flex;
-            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
-        .verify-btn {
+        .admin-section button {
             background-color: #4CAF50;
             color: white;
+            padding: 10px;
             border: none;
-            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .verify-btn:hover {
+        .admin-section button:hover {
             background-color: #45a049;
         }
     </style>
@@ -93,6 +90,24 @@
                 <!-- List of users will be populated here -->
             </ul>
         </div>
+
+
+        <div class="admin-section" id="admin-section">
+            <h2>Challenge Host: Update Challenge</h2>
+            <input type="text" id="challenge-title" placeholder="Challenge Title">
+            <textarea id="challenge-description" placeholder="Challenge Description"></textarea>
+            <input type="number" id="challenge-reward" placeholder="Coins Reward">
+            <button onclick="submitChallenge()">Submit Challenge</button>
+        </div>
+
+    </div>
+        
+        <!-- Back to Home -->
+        <a href="home.html" class="back-link">Back to Home</a>
+
+        <footer>
+            © 2024 Kremerte Pølser. All rights reserved.
+        </footer>
     </div>
 
     <script>
@@ -101,8 +116,8 @@
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
                     }
                 });
 
@@ -132,8 +147,40 @@
                     `;
                     completedUsersList.appendChild(listItem);
                 });
+
+                // Show admin section for challenge host
+                const isAdmin = localStorage.getItem('isChallengeHost') === 'true';
+                if (isChallengeHost) {
+                    document.getElementById('admin-section').style.display = 'block';
+                }
             } catch (error) {
                 console.error('Error loading challenge:', error);
+            }
+        }
+
+        async function submitChallenge() {
+            const title = document.getElementById('challenge-title').value;
+            const description = document.getElementById('challenge-description').value;
+            const reward = parseFloat(document.getElementById('challenge-reward').value);
+
+            try {
+                const response = await fetch('https://mullinsen-github-io.onrender.com/challenge', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, description, reward })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit challenge');
+                }
+
+                alert('Challenge submitted successfully!');
+                loadChallenge(); // Reload the challenge after submission
+            } catch (error) {
+                console.error('Error submitting challenge:', error);
             }
         }
 
@@ -142,8 +189,8 @@
                 const response = await fetch('https://mullinsen-github-io.onrender.com/challenge/verify', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ userId })
                 });

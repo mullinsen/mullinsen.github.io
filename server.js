@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: { type: String },
     coins: { type: Number, default: 2000 },
+    isChallengeHost: { type: Boolean, default: false },
     investments: [
         {
             share: String,
@@ -93,9 +94,9 @@ app.post('/login', async (req, res) => {
         });
     }
 
-    // Generate JWT token or session, etc.
-    const token = jwt.sign({ id: user._id }, 'secretKey');
-    res.json({ success: true, token });
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id, isChallengeHost: user.isChallengeHost }, 'secretKey');
+    res.json({ success: true, token, isChallengeHost: user.isChallengeHost });
 });
 
 // Route to handle forgotten password
@@ -220,6 +221,41 @@ app.get('/standings', authenticate, async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve standings' });
+    }
+});
+
+
+// Middleware to check if user is admin (Michael)
+const isChallengeHost = async (req, res, next) => {
+    const user = await User.findById(req.userId);
+    if (user && user.isChallengeHost) {
+        next();
+    } else {
+        return res.status(403).json({ error: 'Access denied: ChallengeHost only' });
+    }
+};
+
+// Route to create or update the challenge (ChallengeHost only)
+app.post('/challenge', authenticate, isChallengeHost, async (req, res) => {
+    const { title, description, reward } = req.body;
+
+    try {
+        let challenge = await Challenge.findOne();
+
+        // If a challenge already exists, update it, otherwise create a new one
+        if (challenge) {
+            challenge.title = title;
+            challenge.description = description;
+            challenge.reward = reward;
+        } else {
+            challenge = new Challenge({ title, description, reward });
+        }
+
+        await challenge.save();
+        res.json({ message: 'Challenge created/updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
