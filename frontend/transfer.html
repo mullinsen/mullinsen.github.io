@@ -92,6 +92,9 @@
         <p class="error" id="error-message"></p>
         <p class="success" id="success-message"></p>
 
+         <!-- Back to Home -->
+         <a href="home.html" class="back-link">Back to Home</a>
+
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
@@ -141,6 +144,15 @@
             const successMessage = document.getElementById('success-message');
             errorMessage.textContent = '';
             successMessage.textContent = '';
+
+            // Convert transferAmount to a number
+            transferAmount = parseFloat(transferAmount);
+
+            // Validate transferAmount is a valid number and greater than 0
+            if (isNaN(transferAmount) || transferAmount <= 0) {
+                errorMessage.textContent = 'Please enter a valid amount greater than 0.';
+                return;
+            }
 
             try {
                 const response = await fetch('https://mullinsen-github-io.onrender.com/transfer', {
