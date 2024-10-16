@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Coins</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 20px;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Transfer Coins</h1>
+
+        <form id="transfer-form">
+            <input type="text" id="recipient-username" placeholder="Recipient Username" required>
+            <input type="number" id="transfer-amount" placeholder="Amount to Transfer" required>
+            <button type="submit">Transfer Coins</button>
+        </form>
+
+        <p class="error" id="error-message"></p>
+        <p class="success" id="success-message"></p>
+
+        <footer>
+            © 2024 Kremerte Pølser. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('transfer-form').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent form submission from reloading the page
+
+            const recipientUsername = document.getElementById('recipient-username').value;
+            const transferAmount = document.getElementById('transfer-amount').value;
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            try {
+                const response = await fetch('https://mullinsen-github-io.onrender.com/transfer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming you're using JWT for authentication
+                    },
+                    body: JSON.stringify({
+                        recipientUsername,
+                        transferAmount
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorMessage.textContent = data.message || 'Failed to transfer coins';
+                } else {
+                    successMessage.textContent = 'Transfer successful!';
+                    document.getElementById('transfer-form').reset();  // Clear the form after success
+                }
+
+            } catch (error) {
+                errorMessage.textContent = 'Error transferring coins. Please try again later.';
+            }
+        });
+    </script>
+
+</body>
+</html>

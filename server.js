@@ -117,7 +117,6 @@ const authenticate = (req, res, next) => {
     const token = authHeader.split(' ')[1];  // Extract the token part
     try {
         const decoded = jwt.verify(token, 'secretKey');
-        console.log("verified?");
         req.userId = decoded.id;
         next();
     } catch (err) {
@@ -147,9 +146,6 @@ app.post('/invest', authenticate, async (req, res) => {
 // Get user investments
 app.get('/portfolio', authenticate, async (req, res) => {
     const user = await User.findById(req.userId);
-    if(!user) {
-        console.log("Did not find user by ID!");
-    }
     res.json({ coins: user.coins, investments: user.investments });
  });
 
@@ -158,6 +154,36 @@ function getShareValue(share) {
     // Simulate random share value
     return Math.random() * 100; // Replace with real stock value
 }
+
+app.post('/transfer', authenticate, async (req, res) => {
+    const { recipientUsername, transferAmount } = req.body;
+    
+    // Validate inputs
+    if (!recipientUsername || !transferAmount || transferAmount <= 0) {
+        return res.status(400).json({ message: 'Invalid input' });
+    }
+
+    const sender = await User.findById(req.userId);
+    const recipient = await User.findOne({ username: recipientUsername });
+
+    if (!recipient) {
+        return res.status(404).json({ message: 'Recipient not found' });
+    }
+
+    if (sender.coins < transferAmount) {
+        return res.status(400).json({ message: 'Insufficient coins' });
+    }
+
+    // Deduct coins from sender
+    sender.coins -= transferAmount;
+    await sender.save();
+
+    // Add coins to recipient
+    recipient.coins += transferAmount;
+    await recipient.save();
+
+    res.json({ message: 'Transfer successful' });
+});
 
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
