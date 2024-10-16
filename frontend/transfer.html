@@ -140,19 +140,17 @@
             event.preventDefault();  // Prevent form submission from reloading the page
 
             const recipientUsername = document.getElementById('recipient-username').value;
-            const transferAmount = document.getElementById('transfer-amount').value;
+            const transferAmount = parseFloat(document.getElementById('transfer-amount').value);
             const errorMessage = document.getElementById('error-message');
             const successMessage = document.getElementById('success-message');
             errorMessage.textContent = '';
             successMessage.textContent = '';
 
-            // Convert transferAmount to a number
-            transferAmount = parseFloat(transferAmount);
-
             // Validate transferAmount is a valid number and greater than 0
             if (isNaN(transferAmount) || transferAmount <= 0) {
                 errorMessage.textContent = 'Please enter a valid amount greater than 0.';
-                throw new Error('Invalid amount');
+                alert("Failed")
+                return;
             }
 
             try {
