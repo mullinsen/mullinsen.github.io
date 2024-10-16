@@ -36,6 +36,3 @@ async function loadCoins() {
         alert('FAILED loading coins!');
     }
 }
-alert('loading coins!1');
-// Load the coins when the page loads
-window.onload = loadCoins;
