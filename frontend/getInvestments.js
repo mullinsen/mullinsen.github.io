@@ -23,8 +23,7 @@ async function loadInvestments() {
         // Update the investment list
         const investmentList = document.getElementById('investment-list');
         if(!investmentList){
-            alert("No invenstment list on page!");
-            return;
+            throw new Error("No invenstment list on page!");
         }
 
         investmentList.innerHTML = ''; // Clear the existing content
@@ -43,6 +42,7 @@ async function loadInvestments() {
 
     } catch (error) {
         console.error(error);
+        alert("Failed to load invenstments!")
     }
 }
 

@@ -1,5 +1,4 @@
 async function loadCoins() {
-    alert('loading coins!3');
     try {
         // Fetch the user's portfolio from the backend
         const token = localStorage.getItem('token');
@@ -17,7 +16,6 @@ async function loadCoins() {
 
         if (!response.ok) {
             throw new Error('Failed to fetch portfolio');
-            alert('failed loading coins!');
         }
 
         const data = await response.json();
@@ -25,10 +23,8 @@ async function loadCoins() {
         // Update the coin inventory
         const coinElement = document.getElementById('coin-inventory');
         if(!coinElement) {
-            alert('No Coin element on page!');
-            return;
+            throw new Error('No coin-inventory element found');
         }
-        alert('Coin element on page!');
         coinElement.textContent = data.coins;
 
     } catch (error) {
@@ -36,3 +32,5 @@ async function loadCoins() {
         alert('FAILED loading coins!');
     }
 }
+
+window.onload = loadCoins;
