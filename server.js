@@ -299,7 +299,7 @@ app.post('/challenge/complete', authenticate, async (req, res) => {
 });
 
 
-// Verify that a user has completed the challenge
+// Verify that a user has completed the challenge and award coins
 app.post('/challenge/verify', authenticate, async (req, res) => {
     const { userId } = req.body;
     
@@ -310,9 +310,14 @@ app.post('/challenge/verify', authenticate, async (req, res) => {
         const completion = challenge.completedBy.find(c => c.userId.toString() === userId);
         if (!completion) return res.status(404).json({ error: 'User has not completed the challenge' });
 
+        // Check if the challenge is already verified for this user
+        if (completion.verified) {
+            return res.status(400).json({ message: 'Challenge completion has already been verified for this user' });
+        }
+
         // Verify completion
         completion.verified = true;
-        
+
         // Award coins to the user
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });

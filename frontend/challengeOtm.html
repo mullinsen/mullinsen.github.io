@@ -44,15 +44,13 @@
             margin: 10px 0;
         }
 
-        .completed-users {
-            list-style: none; /* Remove default list styling */
-            padding: 0; /* Remove padding */
-            margin: 0; /* Remove margin */
-            max-width: 600px; /* Limit width */
-            background: #f9f9f9; /* Light background color */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-            overflow: hidden; /* Clip inner content */
+        .completed-users li {
+            display: flex; /* Flex layout for alignment */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */
+            padding: 15px; /* Padding around each item */
+            border-bottom: 1px solid #ddd; /* Divider between items */
+            transition: background 0.3s; /* Smooth background change */
         }
 
         .completed-users li {
@@ -73,18 +71,9 @@
         }
 
         .verify-btn {
-            padding: 5px 10px; /* Smaller button padding */
-            background: #4CAF50; /* Green background */
-            color: white; /* White text */
-            border: none; /* Remove border */
-            border-radius: 3px; /* Slightly rounded corners for button */
-            cursor: pointer; /* Pointer cursor on hover */
-            transition: background 0.3s; /* Smooth background change */
-            font-size: 0.8em; /* Smaller font size */
-            position: absolute; /* Position button absolutely */
-            right: 15px; /* Align to the right with some padding */
-            top: 50%; /* Center vertically */
-            transform: translateY(-50%); /* Adjust for vertical alignment */
+            padding: 3px 8px; /* Smaller button padding */
+            font-size: 0.7em; /* Smaller font size */
+            margin-left: 10px; /* Space between username and button */
         }
 
         .verify-btn:hover {
@@ -212,7 +201,9 @@
 
                         listItem.innerHTML = `
                             <span>${user.userId.username}</span>
-                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')" style="${isOwnClaim ? 'display: none;' : 'display: inline-block;'}">
+                            <button class="verify-btn" onclick="verifyCompletion('${user.userId._id}')" 
+                                    style="${isOwnClaim ? 'display: none;' : 'display: inline-block;'}"
+                                    ${user.verified ? 'disabled' : ''}>
                                 ${user.verified ? 'Verified' : 'Verify'}
                             </button>
                         `;
