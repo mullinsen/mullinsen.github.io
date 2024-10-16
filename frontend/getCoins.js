@@ -23,10 +23,9 @@ async function loadCoins() {
         // Update the coin inventory
         const coinElement = document.getElementById('coin-inventory');
         if(!coinElement) {
-            alert('No Coin element on page!')
+            alert('No Coin element on page!');
             return;
         }
-
         coinElement.textContent = data.coins;
 
     } catch (error) {
