@@ -371,7 +371,7 @@ app.post('/betting/reward', authenticate, async (req, res) => {
     if (!gambler) return res.status(404).json({ error: 'User not found' });
 
     // Add coins to gambler
-    gambler.coins += betAmount;
+    gambler.coins += reward;
     await gambler.save();
 
     res.json({ message: 'Rewarded successfully' });
