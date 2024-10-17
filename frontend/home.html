@@ -69,24 +69,87 @@
             font-size: 14px;
             color: #aaa;
         }
+
+        .hotdog-rain-btn {
+            padding: 10px 20px;
+            background-color: #ff4500; /* Hot dog color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        .hotdog-rain-btn:hover {
+            background-color: #e63e00; /* Slightly darker when hovered */
+        }
+
+        .hotdog {
+            position: absolute;
+            top: -50px; /* Start above the screen */
+            font-size: 30px; /* Adjust size of the hot dog */
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            z-index: 999; /* Ensure it appears above content */
+        }
+
+        @keyframes fall {
+            0% {
+                top: -50px;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Investment Platform</h1>
+        <h1>Welcome to the Kremerte Pølser Platform</h1>
         <p>Manage your investments, check standings, and transfer coins seamlessly.</p>
+        <p>Collect coins to enhance your status in the group.</p>
         
         <div class="nav-links">
             <a href="challengeOtm.html">Challenge Of The Month</a>
+            <a href="betting.html">Feeling lucky?</a>
             <a href="invest.html">Investing</a>
             <a href="standings.html">Standings</a>
             <a href="transfer.html">Transfer</a>
         </div>
+
+        <button class="hotdog-rain-btn" id="hotdog-rain-btn" onclick="makeItRainHotdogs()">Make it Rain</button>
 
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
     <script src="auth.js"></script>
+    <script>
+        function makeItRainHotdogs() {
+            const hotdogCount = 30; // Number of hot dogs to drop
+            const container = document.body;
+        
+            for (let i = 0; i < hotdogCount; i++) {
+                const hotdog = document.createElement('div');
+                hotdog.classList.add('hotdog');
+                hotdog.innerHTML = '🌭'; // Hot dog emoji
+                hotdog.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+                hotdog.style.animationDuration = `${Math.random() * 2 + 3}s`; // Random falling speed
+                container.appendChild(hotdog);
+        
+                // Remove hotdog after animation ends
+                hotdog.addEventListener('animationend', () => {
+                    hotdog.remove();
+                });
+            }
+        }
+    </script>
 </body>
 </html>
