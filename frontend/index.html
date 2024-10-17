@@ -32,6 +32,7 @@
             const spinner = document.getElementById('spinner');
 
             spinner.style.display = "block";
+            errorMessage.style.color = "black";
             errorMessage.textContent = 'Please wait...';
 
             try {
@@ -47,6 +48,7 @@
                 errorMessage.textContent = "";
                 
                 if (!result.success) {
+                    errorMessage.style.color = "red";
                     errorMessage.textContent = result.message;
                 } else {
                     localStorage.setItem('userId', result.userId);
@@ -56,6 +58,7 @@
                 }
             }
             catch (error) {
+                errorMessage.style.color = "red";
                 errorMessage.textContent = 'Server error. Please try again later.';
             }
         }
