@@ -333,6 +333,50 @@ app.post('/challenge/verify', authenticate, async (req, res) => {
     }
 });
 
+app.post('/betting/place', authenticate, async (req, res) => {
+    const { betAmount } = req.body;
+
+     // Validate betAmount is a number and greater than 0
+     if (!betAmount || typeof betAmount !== 'number' || betAmount <= 0) {
+        return res.status(400).json({ message: 'Invalid bet input' });
+    }
+
+    const gambler = await User.findById(req.userId);
+    if (!gambler) return res.status(404).json({ error: 'User not found' });
+
+    if (gambler.coins < betAmount) {
+        return res.status(400).json({ message: 'Insufficient coins' });
+    }
+
+    // Deduct coins from gambler
+    gambler.coins -= betAmount;
+    await gambler.save();
+
+    // Add coins to recipient
+    //recipient.coins += transferAmount;
+    //await recipient.save();
+
+    res.json({ message: 'Bet placed successfully' });
+});
+
+app.post('/betting/reward', authenticate, async (req, res) => {
+    const { reward } = req.body;
+
+     // Validate reward is a number and greater than 0
+     if (!reward || typeof reward !== 'number' || reward <= 0) {
+        return res.status(400).json({ message: 'Invalid reward' });
+    }
+
+    const gambler = await User.findById(req.userId);
+    if (!gambler) return res.status(404).json({ error: 'User not found' });
+
+    // Add coins to gambler
+    gambler.coins += betAmount;
+    await gambler.save();
+
+    res.json({ message: 'Rewarded successfully' });
+});
+
 
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
