@@ -130,14 +130,19 @@
             const winChance = Math.random();
 
             // Realistic algorithm:
-            // 80% chance to lose
-            if (winChance < 0.8) {
+            // 50% chance to lose
+            if (winChance < 0.5) {
                 return { isWin: false, prize: 0 };
             }
             
-            // 19% chance to win a normal prize (0.5x to 2.5x their bet)
+            // 30% chance to win money back (1x return)
+            else if (winChance < 0.8) {
+                return { isWin: true, prize: betAmount }; // Win 1x their bet (money back)
+            }
+            
+            // 19% chance to win a small prize (1.5x to 3x their bet)
             else if (winChance < 0.99) {
-                const prize = betAmount * (Math.random() * 2 + 0.5); // Win between 0.5x to 2.5x the bet
+                const prize = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
                 return { isWin: true, prize: Math.round(prize) };
             }
             
