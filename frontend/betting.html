@@ -116,17 +116,15 @@
             }
         }
 
-        async function placeRewardServer(prize) {
+        async function placeRewardServer(reward) {
             try {
-                const betAmount = parseFloat(document.getElementById('bet-amount').value);
-
                 const response = await fetch('https://mullinsen-github-io.onrender.com/betting/reward', {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prize })
+                    body: JSON.stringify({ reward })
                 });
 
                 if (!response.ok) {
@@ -164,7 +162,7 @@
                 if (outcome.isWin) {
                     resultMessage.textContent = `You won ${outcome.prize} coins!`;
                     resultMessage.style.color = "green";
-                    placeRewardServer(outcome.prize);
+                    placeRewardServer(parseFloat(outcome.prize));
 
                 } else {
                     resultMessage.textContent = `You lost ${betAmount} coins. Better luck next time!`;
