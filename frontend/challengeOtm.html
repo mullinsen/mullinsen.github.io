@@ -132,6 +132,8 @@
             </ul>
         </div>
 
+        <p id="user-status">You have not completed the challenge</p>
+
         <!-- Button for users to claim challenge completion -->
         <button class="claim-btn" id="claim-btn" onclick="claimChallenge()">Claim Challenge Completion</button>
 
@@ -190,6 +192,8 @@
                 // Populate users who completed the challenge
                 const completedUsersList = document.getElementById('completed-users-list');
                 completedUsersList.innerHTML = ''; // Clear the list
+
+                const userStatus = document.getElementById('user-status');
                 
                 // Check if there are completed users
                 if (challenge.completedBy.length === 0) {
@@ -208,6 +212,10 @@
                             </button>
                         `;
                         completedUsersList.appendChild(listItem);
+
+                        if(isOwnClaim){
+                            userStatus.textContent = `${user.verified ? "Your challenge is verified!" : "Your challenge is up for verification"}`;
+                        }
                     });
                 }
             } catch (error) {
