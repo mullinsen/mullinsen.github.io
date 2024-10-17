@@ -184,9 +184,8 @@
                     resultMessage.textContent = `You lost ${betAmount} coins. Better luck next time!`;
                     resultMessage.style.color = "red";
                 }
+                loadCoins(); // Refresh coins
             }, 2000); // Delay for suspense
-
-            loadCoins(); // Refresh coins 
         }
 
         // Betting outcome algorithm: user more likely to lose over time with slim chances of big wins
