@@ -62,6 +62,45 @@ const challengeSchema = new mongoose.Schema({
 const Challenge = mongoose.model('Challenge', challengeSchema);
 
 
+// Define a schema for comments, including page identifier
+const commentSchema = new mongoose.Schema({
+    pageId: String, // Store the page identifier
+    username: String, // Store the username of the commenter
+    text: String,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Comment = mongoose.model('Comment', commentSchema);
+
+// API endpoint to get comments for a specific page
+app.get('/comments/:pageId', async (req, res) => {
+    const { pageId } = req.params;
+
+    try {
+        const comments = await Comment.find({ pageId }).sort({ createdAt: -1 }); // Sort by newest first
+        res.json(comments);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving comments' });
+    }
+});
+
+// API endpoint to submit a new comment for a specific page
+app.post('/comments', async (req, res) => {
+    const { pageId, username, text } = req.body;
+
+    if (!pageId || !username || !text) {
+        return res.status(400).json({ message: 'Page ID, username, and comment text are required' });
+    }
+
+    const newComment = new Comment({ pageId, username, text });
+    try {
+        await newComment.save();
+        res.status(201).json(newComment);
+    } catch (error) {
+        res.status(500).json({ message: 'Error saving comment' });
+    }
+});
+
 // Function to log a transaction with additional details
 async function logTransaction(userId, type, amount, details) {
     const user = await User.findById(userId);

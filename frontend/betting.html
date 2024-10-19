@@ -31,7 +31,7 @@
             color: #333;
         }
 
-        input[type="number"] {
+        input[type="number"], textarea {
             padding: 10px;
             width: calc(100% - 22px);
             margin-bottom: 20px;
@@ -40,7 +40,7 @@
             font-size: 16px;
         }
 
-        .bet-btn {
+        .bet-btn, .comment-btn {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -51,7 +51,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .bet-btn:hover {
+        .bet-btn:hover, .comment-btn:hover {
             background-color: #45a049;
         }
 
@@ -61,14 +61,58 @@
             font-weight: bold;
         }
 
-        .potential-rewards {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: #777;
+        /* Circular Spin Wheel Styles */
+        .wheel-container {
+            position: relative;
+            margin: 20px auto;
+            width: 250px;
+            height: 250px;
         }
 
-        .spinner {
-            display: none;
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #333;
+            background: conic-gradient(
+                #FFD700 0deg 30deg,   /* 1x Prize */
+                #FF5733 30deg 39deg,  /* 1.5x Prize */
+                #C70039 39deg 48deg,  /* 2x Prize */
+                #900C3F 48deg 57deg, /* 5x Prize */
+                #28B463 57deg 60deg,/* 10x Prize */
+                #581845 60deg 61deg,/* 50x Prize */
+                #CCCCCC 61deg 121deg,/* No Prize 1 */
+                #EAEAEA 121deg 181deg,/* No Prize 2 */
+                #D3D3D3 181deg 241deg,/* No Prize 3 */
+                #D3D3D3 241deg 301deg,/* No Prize 4 */
+                #D3D3D3 301deg 360deg /* No Prize 5 */
+            );
+            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        /* Arrow at the top */
+        .arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid red;
+        }
+
+        /* Comments section styles */
+        .comments-section {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .comment {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -83,33 +127,52 @@
             <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for investment.</p>
         </div>
 
-        <!-- Possible Win Display -->
-        <div class="potential-rewards">
-            <p>Possible reward:</p>
-            <p>Up to 100x your bet!</p>
-        </div>
-
         <p>Enter your bet amount:</p>
         <input type="number" id="bet-amount" min="1" placeholder="Enter coins to bet">
 
         <button class="bet-btn" id="bet-btn" onclick="placeBet()">Place Bet</button>
 
-        <!-- Spinner animation to create suspense -->
-        <div class="spinner" id="spinner"></div>
+        <!-- Spin Wheel -->
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel" id="wheel"></div>
+        </div>
 
         <!-- Result message -->
         <p class="result-message" id="result-message"></p>
 
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h2>Comments</h2>
+            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
+            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
+            <div id="comments-list"></div>
+        </div>
+
         <!-- Back to Home -->
         <a href="home.html" class="back-link">Back to Home</a>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h2>Comments</h2>
+            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
+            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
+            <div id="comments-list"></div>
+        </div>
 
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
+
     <script src="auth.js"></script>
     <script src="loadUserInformation.js"></script>
     <script>
+        let spinAngle = 0;
+
+        // Replace this with a unique identifier for this page
+        const pageId = 'betting'; // Unique ID for the betting page
+
         async function placeBetServer() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
 
@@ -150,87 +213,142 @@
         async function placeBet() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
             const resultMessage = document.getElementById('result-message');
-            const spinner = document.getElementById('spinner');
+            const wheel = document.getElementById('wheel');
 
             if (!betAmount || betAmount <= 0) {
                 resultMessage.textContent = "Please enter a valid bet amount!";
                 return;
             }
 
-            // Reset result message and show spinner
             resultMessage.textContent = "";
-            spinner.style.display = "block";
 
             // Try placing the bet on the server and handle errors
             try {
-                await placeBetServer();
+                await placeBetServer(); // If this throws, catch will handle it and return
             } catch (error) {
-                spinner.style.display = "none";
                 resultMessage.textContent = "Bet failed. Please check your coins and try again.";
                 resultMessage.style.color = "red";
                 return;
             }
 
-            // Simulate delay for suspense with the spinner
+            // Spin the wheel
+            const spinOutcome = determineOutcome(betAmount);
+            spinAngle = 360 * 4 + spinOutcome.angle; // 4 full rotations plus final stop
+            wheel.style.transform = `rotate(${spinAngle}deg)`;
+
+            // Show result after spin animation (4s delay)
             setTimeout(() => {
-                spinner.style.display = "none";
+                resultMessage.textContent = spinOutcome.isWin 
+                    ? `You won ${spinOutcome.reward} coins!` 
+                    : "Sorry, no prize this time!";
+                resultMessage.style.color = spinOutcome.isWin ? "green" : "red";
 
-                // Determine win or lose based on an algorithm
-                const outcome = determineOutcome(betAmount);
-
-                if (outcome.isWin) {
-                    resultMessage.textContent = `You won ${outcome.prize} coins!`;
-                    resultMessage.style.color = "green";
-                    placeRewardServer(parseFloat(outcome.prize)); 
-
-                } else {
-                    // Near-miss feedback
-                    const nearMiss = Math.random() < 0.4 ? `So close! You almost won ${Math.floor(betAmount * (Math.random() * 3 + 1))} coins!` : "Sorry, no reward.";
-                    resultMessage.textContent = nearMiss;
-                    resultMessage.style.color = "red";
+                if (spinOutcome.isWin) {
+                    placeRewardServer(parseFloat(spinOutcome.reward)); // Only give reward after successful bet
                 }
-                loadCoins(); 
-            }, 2000);
+
+                loadCoins(); // Refresh coins after the result
+            }, 4000);
         }
 
+        // Outcome determination logic with spin angles corresponding to original logic
         function determineOutcome(betAmount) {
             const winChance = Math.random();
 
+            // Realistic algorithm:
             // 60% chance to lose
             if (winChance < 0.60) {
-                return { isWin: false, prize: 0 };
+                return { isWin: false, reward: 0, angle: Math.random() * 120 + 210 }; // Random angle in No Prize range
             }
-            
             // 30% chance to win money back (1x return)
             else if (winChance < 0.90) {
-                return { isWin: true, prize: betAmount };
+                return { isWin: true, reward: betAmount, angle: 30 }; // 1x return
             }
-            
             // 9% chance to win a small prize (1.5x to 3x their bet)
             else if (winChance < 0.99) {
-                const prize = betAmount * (Math.random() * 1.5 + 1.5); 
-                return { isWin: true, prize: Math.round(prize) };
+                const reward = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 45 }; // Small prize
             }
-            
             // 0.9% chance to win a medium prize (5x to 10x their bet)
             else if (winChance < 0.999) {
-                const prize = betAmount * (Math.random() * 5 + 5); 
-                return { isWin: true, prize: Math.round(prize) };
+                const reward = betAmount * (Math.random() * 5 + 5); // Win between 5x to 10x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 60 }; // Medium prize
             }
-            
             // 0.1% chance to win a large prize (50x to 100x their bet)
             else {
-                const prize = betAmount * (Math.random() * 50 + 50); 
-                return { isWin: true, prize: Math.round(prize) };
+                const reward = betAmount * (Math.random() * 50 + 50); // Win between 50x to 100x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 75 }; // Large prize
+            }
+        }
+
+        // Fetch and display comments for the specific page
+        async function loadComments() {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = ''; // Clear current comments
+
+            try {
+                const response = await fetch(`https://mullinsen-github-io.onrender.com/comments/${pageId}`);
+                const comments = await response.json();
+                comments.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment');
+                    commentElement.textContent = `${comment.username}: ${comment.text}`;
+                    commentsList.appendChild(commentElement);
+                });
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                alert("Failed to load comments.");
+            }
+        }
+
+        // Submit comment functionality with server-side storage for a specific page
+        async function submitComment() {
+            const commentInput = document.getElementById('comment-input');
+            const commentsList = document.getElementById('comments-list');
+            const commentText = commentInput.value.trim();
+            const username = localStorage.getItem('username') || 'Anonymous'; // Get username from Local Storage
+
+            if (commentText) {
+                try {
+                    // Post the comment to the server with pageId
+                    const response = await fetch('https://mullinsen-github-io.onrender.com/comments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ pageId, username, text: commentText })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to submit comment');
+                    }
+
+                    // Add the comment to the list
+                    const newComment = await response.json();
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment');
+                    commentElement.textContent = `${newComment.username}: ${newComment.text}`;
+                    commentsList.appendChild(commentElement);
+
+                    // Clear the input field
+                    commentInput.value = '';
+                } catch (error) {
+                    console.error('Error submitting comment:', error);
+                    alert("Failed to submit comment!");
+                }
+            } else {
+                alert("Please enter a comment before submitting!");
             }
         }
 
         async function onLoadCalls() {
             checkAuthentication();
             loadCoins();
+            loadComments();
         }
 
+        // Call onLoadCalls on load
         window.onload = onLoadCalls;
     </script>
 </body>
-</
+</html>
