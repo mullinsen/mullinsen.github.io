@@ -31,7 +31,7 @@
             color: #333;
         }
 
-        input[type="number"], textarea {
+        input[type="number"] {
             padding: 10px;
             width: calc(100% - 22px);
             margin-bottom: 20px;
@@ -40,7 +40,7 @@
             font-size: 16px;
         }
 
-        .bet-btn, .comment-btn {
+        .bet-btn {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -51,7 +51,7 @@
             transition: background-color 0.3s ease;
         }
 
-        .bet-btn:hover, .comment-btn:hover {
+        .bet-btn:hover {
             background-color: #45a049;
         }
 
@@ -61,58 +61,14 @@
             font-weight: bold;
         }
 
-        /* Circular Spin Wheel Styles */
-        .wheel-container {
-            position: relative;
-            margin: 20px auto;
-            width: 250px;
-            height: 250px;
+        .potential-rewards {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #777;
         }
 
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 5px solid #333;
-            background: conic-gradient(
-                #FFD700 0deg 30deg,   /* 1x Prize */
-                #FF5733 30deg 39deg,  /* 1.5x Prize */
-                #C70039 39deg 48deg,  /* 2x Prize */
-                #900C3F 48deg 57deg, /* 5x Prize */
-                #28B463 57deg 60deg,/* 10x Prize */
-                #581845 60deg 61deg,/* 50x Prize */
-                #CCCCCC 61deg 121deg,/* No Prize 1 */
-                #EAEAEA 121deg 181deg,/* No Prize 2 */
-                #D3D3D3 181deg 241deg,/* No Prize 3 */
-                #D3D3D3 241deg 301deg,/* No Prize 4 */
-                #D3D3D3 301deg 360deg /* No Prize 5 */
-            );
-            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-        }
-
-        /* Arrow at the top */
-        .arrow {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid red;
-        }
-
-        /* Comments section styles */
-        .comments-section {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .comment {
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
+        .spinner {
+            display: none;
         }
     </style>
 </head>
@@ -127,33 +83,28 @@
             <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for investment.</p>
         </div>
 
+        <!-- Possible Win Display -->
+        <div class="potential-rewards">
+            <p>Possible reward:</p>
+            <p>Up to 100x your bet!</p>
+        </div>
+
         <p>Enter your bet amount:</p>
         <input type="number" id="bet-amount" min="1" placeholder="Enter coins to bet">
 
         <button class="bet-btn" id="bet-btn" onclick="placeBet()">Place Bet</button>
 
-        <!-- Spin Wheel -->
-        <div class="wheel-container">
-            <div class="arrow"></div>
-            <div class="wheel" id="wheel"></div>
-        </div>
+        <!-- Spinner animation to create suspense -->
+        <div class="spinner" id="spinner"></div>
 
         <!-- Result message -->
         <p class="result-message" id="result-message"></p>
 
-        <!-- Comments Section -->
-        <div class="comments-section">
-            <h2>Comments</h2>
-            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
-            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
-            <div id="comments-list"></div>
-        </div>
-
         <!-- Back to Home -->
         <a href="home.html" class="back-link">Back to Home</a>
 
-        <!-- Comments Section -->
-        <div class="comments-section">
+         <!-- Comments Section -->
+         <div class="comments-section">
             <h2>Comments</h2>
             <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
             <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
@@ -164,15 +115,9 @@
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
-
     <script src="auth.js"></script>
     <script src="loadUserInformation.js"></script>
     <script>
-        let spinAngle = 0;
-
-        // Replace this with a unique identifier for this page
-        const pageId = 'betting'; // Unique ID for the betting page
-
         async function placeBetServer() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
 
@@ -213,73 +158,83 @@
         async function placeBet() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
             const resultMessage = document.getElementById('result-message');
-            const wheel = document.getElementById('wheel');
+            const spinner = document.getElementById('spinner');
 
             if (!betAmount || betAmount <= 0) {
                 resultMessage.textContent = "Please enter a valid bet amount!";
                 return;
             }
 
+            // Reset result message and show spinner
             resultMessage.textContent = "";
+            spinner.style.display = "block";
 
             // Try placing the bet on the server and handle errors
             try {
-                await placeBetServer(); // If this throws, catch will handle it and return
+                await placeBetServer();
             } catch (error) {
+                spinner.style.display = "none";
                 resultMessage.textContent = "Bet failed. Please check your coins and try again.";
                 resultMessage.style.color = "red";
                 return;
             }
 
-            // Spin the wheel
-            const spinOutcome = determineOutcome(betAmount);
-            spinAngle = 360 * 4 + spinOutcome.angle; // 4 full rotations plus final stop
-            wheel.style.transform = `rotate(${spinAngle}deg)`;
-
-            // Show result after spin animation (4s delay)
+            // Simulate delay for suspense with the spinner
             setTimeout(() => {
-                resultMessage.textContent = spinOutcome.isWin 
-                    ? `You won ${spinOutcome.reward} coins!` 
-                    : "Sorry, no prize this time!";
-                resultMessage.style.color = spinOutcome.isWin ? "green" : "red";
+                spinner.style.display = "none";
 
-                if (spinOutcome.isWin) {
-                    placeRewardServer(parseFloat(spinOutcome.reward)); // Only give reward after successful bet
+                // Determine win or lose based on an algorithm
+                const outcome = determineOutcome(betAmount);
+
+                if (outcome.isWin) {
+                    resultMessage.textContent = `You won ${outcome.prize} coins!`;
+                    resultMessage.style.color = "green";
+                    placeRewardServer(parseFloat(outcome.prize)); 
+
+                } else {
+                    // Near-miss feedback
+                    const nearMiss = Math.random() < 0.4 ? `So close! You almost won ${Math.floor(betAmount * (Math.random() * 3 + 1))} coins!` : "Sorry, no reward.";
+                    resultMessage.textContent = nearMiss;
+                    resultMessage.style.color = "red";
                 }
-
-                loadCoins(); // Refresh coins after the result
-            }, 4000);
+                loadCoins(); 
+            }, 2000);
         }
 
-        // Outcome determination logic with spin angles corresponding to original logic
         function determineOutcome(betAmount) {
             const winChance = Math.random();
 
-            // Realistic algorithm:
             // 60% chance to lose
             if (winChance < 0.60) {
-                return { isWin: false, reward: 0, angle: Math.random() * 120 + 210 }; // Random angle in No Prize range
+                return { isWin: false, prize: 0 };
             }
+            
             // 30% chance to win money back (1x return)
             else if (winChance < 0.90) {
-                return { isWin: true, reward: betAmount, angle: 30 }; // 1x return
+                return { isWin: true, prize: betAmount };
             }
+            
             // 9% chance to win a small prize (1.5x to 3x their bet)
             else if (winChance < 0.99) {
-                const reward = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
-                return { isWin: true, reward: Math.round(reward), angle: 45 }; // Small prize
+                const prize = betAmount * (Math.random() * 1.5 + 1.5); 
+                return { isWin: true, prize: Math.round(prize) };
             }
+            
             // 0.9% chance to win a medium prize (5x to 10x their bet)
             else if (winChance < 0.999) {
-                const reward = betAmount * (Math.random() * 5 + 5); // Win between 5x to 10x the bet
-                return { isWin: true, reward: Math.round(reward), angle: 60 }; // Medium prize
+                const prize = betAmount * (Math.random() * 5 + 5); 
+                return { isWin: true, prize: Math.round(prize) };
             }
+            
             // 0.1% chance to win a large prize (50x to 100x their bet)
             else {
-                const reward = betAmount * (Math.random() * 50 + 50); // Win between 50x to 100x the bet
-                return { isWin: true, reward: Math.round(reward), angle: 75 }; // Large prize
+                const prize = betAmount * (Math.random() * 50 + 50); 
+                return { isWin: true, prize: Math.round(prize) };
             }
         }
+
+        // Replace this with a unique identifier for this page
+        const pageId = 'bettingPage'; // Unique ID for the betting page
 
         // Fetch and display comments for the specific page
         async function loadComments() {
@@ -347,8 +302,7 @@
             loadComments();
         }
 
-        // Call onLoadCalls on load
         window.onload = onLoadCalls;
     </script>
 </body>
-</html>
+</

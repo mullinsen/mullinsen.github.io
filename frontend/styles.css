@@ -113,6 +113,20 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Comments section styles */
+.comments-section {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
 footer {
     margin-top: 30px;
     font-size: 14px;
