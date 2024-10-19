@@ -149,6 +149,14 @@
         <!-- Back to Home -->
         <a href="home.html" class="back-link">Back to Home</a>
 
+         <!-- Comments Section -->
+         <div class="comments-section">
+            <h2>Comments</h2>
+            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
+            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
+            <div id="comments-list"></div>
+        </div>
+
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
@@ -156,6 +164,10 @@
         
         
     <script src="auth.js"></script>
+    <script>
+        const pageId = 'challengeOtmPage'; // Unique ID
+    </script>
+    <script src="comments.js"></script>
     <script>
         async function loadChallenge() {
             // Show admin section for challenge host
@@ -296,7 +308,7 @@
         async function onLoadCalls() {
             checkAuthentication();
             loadChallenge();
-            //loadUsers();
+            loadComments();
         }
 
         // Call onLoadCalls on load

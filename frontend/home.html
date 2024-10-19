@@ -113,11 +113,23 @@
          
         <button id="hotdog-rain-btn" onclick="makeItRainHotdogs()">Make it Rain</button>
 
+         <!-- Comments Section -->
+         <div class="comments-section">
+            <h2>Comments</h2>
+            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
+            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
+            <div id="comments-list"></div>
+        </div>
+
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
     <script src="auth.js"></script>
+    <script>
+        const pageId = 'homePage'; // Unique ID
+    </script>
+    <script src="comments.js"></script>
     <script>
         function makeItRainHotdogs() {
             const hotdogCount = 30; // Number of hot dogs to drop
@@ -137,6 +149,14 @@
                 });
             }
         }
+
+        async function onLoadCalls() {
+            checkAuthentication();
+            loadComments();
+        }
+
+        // Call onLoadCalls on load
+        window.onload = onLoadCalls;
     </script>
 </body>
 </html>

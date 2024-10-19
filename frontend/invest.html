@@ -57,17 +57,30 @@
         <!-- Back to Home -->
         <a href="home.html" class="back-link">Back to Home</a>
 
+         <!-- Comments Section -->
+         <div class="comments-section">
+            <h2>Comments</h2>
+            <textarea id="comment-input" rows="4" placeholder="Leave a comment..."></textarea>
+            <button class="comment-btn" onclick="submitComment()">Submit Comment</button>
+            <div id="comments-list"></div>
+        </div>
+
         <footer>
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
     <script src="auth.js"></script>
+    <script>
+        const pageId = 'investPage'; // Unique ID for the betting page
+    </script>
+    <script src="comments.js"></script>
     <script src="loadUserInformation.js"></script>
     <script>
         async function onLoadCalls() {
             checkAuthentication();
             loadCoins();
             loadInvestments();
+            loadComments();
         }
 
         // Call onLoadCalls on load
