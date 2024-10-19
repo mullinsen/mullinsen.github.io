@@ -75,12 +75,17 @@
             border-radius: 50%;
             border: 5px solid #333;
             background: conic-gradient(
-                #FFD700 0deg 60deg,
-                #FF5733 60deg 120deg,
-                #C70039 120deg 180deg,
-                #900C3F 180deg 240deg,
-                #581845 240deg 300deg,
-                #28B463 300deg 360deg
+                #FFD700 0deg 30deg,   /* 1x Prize */
+                #FF5733 30deg 39deg,  /* 1.5x Prize */
+                #C70039 39deg 48deg,  /* 2x Prize */
+                #900C3F 48deg 57deg, /* 5x Prize */
+                #28B463 57deg 60deg,/* 10x Prize */
+                #581845 60deg 61deg,/* 50x Prize */
+                #CCCCCC 61deg 121deg,/* No Prize 1 */
+                #EAEAEA 121deg 181deg,/* No Prize 2 */
+                #D3D3D3 181deg 241deg,/* No Prize 3 */
+                #D3D3D3 241deg 301deg,/* No Prize 4 */
+                #D3D3D3 301deg 360deg /* No Prize 5 */
             );
             transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
         }
@@ -194,7 +199,7 @@
             }
 
             // Spin the wheel
-            const spinOutcome = determineOutcome();
+            const spinOutcome = determineOutcome(betAmount);
             spinAngle = 360 * 4 + spinOutcome.angle; // 4 full rotations plus final stop
             wheel.style.transform = `rotate(${spinAngle}deg)`;
 
@@ -202,7 +207,7 @@
             setTimeout(() => {
                 resultMessage.textContent = spinOutcome.isWin 
                     ? `You won ${spinOutcome.reward} coins!` 
-                    : "So close! You almost hit the jackpot!";
+                    : "Sorry, no prize this time!";
                 resultMessage.style.color = spinOutcome.isWin ? "green" : "red";
 
                 if (spinOutcome.isWin) {
@@ -213,19 +218,34 @@
             }, 4000);
         }
 
-        // Outcome determination logic with spin angles
-        function determineOutcome() {
-            const outcomes = [
-                { isWin: true, reward: 1, angle: 0 },
-                { isWin: true, reward: 2, angle: 60 },
-                { isWin: true, reward: 5, angle: 120 },
-                { isWin: true, reward: 10, angle: 180 },
-                { isWin: true, reward: 50, angle: 240 },
-                { isWin: true, reward: 100, angle: 300 }
-            ];
+        // Outcome determination logic with spin angles corresponding to original logic
+        function determineOutcome(betAmount) {
+            const winChance = Math.random();
 
-            const randomIndex = Math.floor(Math.random() * outcomes.length);
-            return outcomes[randomIndex];
+            // Realistic algorithm:
+            // 60% chance to lose
+            if (winChance < 0.60) {
+                return { isWin: false, reward: 0, angle: Math.random() * 120 + 210 }; // Random angle in No Prize range
+            }
+            // 30% chance to win money back (1x return)
+            else if (winChance < 0.90) {
+                return { isWin: true, reward: betAmount, angle: 15 }; // 1x return
+            }
+            // 9% chance to win a small prize (1.5x to 3x their bet)
+            else if (winChance < 0.99) {
+                const reward = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 30 }; // Small prize
+            }
+            // 0.9% chance to win a medium prize (5x to 10x their bet)
+            else if (winChance < 0.999) {
+                const reward = betAmount * (Math.random() * 5 + 5); // Win between 5x to 10x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 45 }; // Medium prize
+            }
+            // 0.1% chance to win a large prize (50x to 100x their bet)
+            else {
+                const reward = betAmount * (Math.random() * 50 + 50); // Win between 50x to 100x the bet
+                return { isWin: true, reward: Math.round(reward), angle: 60 }; // Large prize
+            }
         }
 
         async function onLoadCalls() {
@@ -233,6 +253,7 @@
             loadCoins();
         }
 
+        // Call onLoadCalls on load
         window.onload = onLoadCalls;
     </script>
 </body>
