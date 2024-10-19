@@ -23,7 +23,7 @@ async function submitComment() {
     const commentInput = document.getElementById('comment-input');
     const commentsList = document.getElementById('comments-list');
     const commentText = commentInput.value.trim();
-    const username = localStorage.getItem('userId') || 'Anonymous'; // Get username from Local Storage
+    const username = localStorage.getItem('username') || 'Anonymous'; // Get username from Local Storage
 
     if (commentText) {
         try {
