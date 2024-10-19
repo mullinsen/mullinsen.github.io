@@ -60,6 +60,23 @@
             font-size: 18px;
             font-weight: bold;
         }
+
+        .potential-rewards {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: #777;
+        }
+
+        .recent-wins {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .spinner {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +90,12 @@
             <p>You currently have <strong id="coin-inventory">Loading...</strong> coins available for investment.</p>
         </div>
 
+        <!-- Possible Win Display -->
+        <div class="potential-rewards">
+            <p>Possible rewards for this bet:</p>
+            <p>1x, 3x, 10x, up to 100x your bet!</p>
+        </div>
+
         <p>Enter your bet amount:</p>
         <input type="number" id="bet-amount" min="1" placeholder="Enter coins to bet">
 
@@ -83,6 +106,11 @@
 
         <!-- Result message -->
         <p class="result-message" id="result-message"></p>
+
+        <!-- Recent Wins -->
+        <div class="recent-wins">
+            <p>Recent wins: 10x, 50x, 3x!</p>
+        </div>
 
         <!-- Back to Home -->
         <a href="home.html" class="back-link">Back to Home</a>
@@ -147,12 +175,12 @@
 
             // Try placing the bet on the server and handle errors
             try {
-                await placeBetServer(); // If this throws, catch will handle it and return
+                await placeBetServer();
             } catch (error) {
-                spinner.style.display = "none"; // Hide spinner on error
+                spinner.style.display = "none";
                 resultMessage.textContent = "Bet failed. Please check your coins and try again.";
                 resultMessage.style.color = "red";
-                return; // Stop further execution if the bet fails
+                return;
             }
 
             // Simulate delay for suspense with the spinner
@@ -165,22 +193,21 @@
                 if (outcome.isWin) {
                     resultMessage.textContent = `You won ${outcome.prize} coins!`;
                     resultMessage.style.color = "green";
-                    placeRewardServer(parseFloat(outcome.prize)); // Only give reward after successful bet
+                    placeRewardServer(parseFloat(outcome.prize)); 
 
                 } else {
-                    resultMessage.textContent = `Sorry, no reward. Better luck next time!`;
+                    // Near-miss feedback
+                    const nearMiss = Math.random() < 0.4 ? `So close! You almost won ${Math.floor(betAmount * (Math.random() * 3 + 1))} coins!` : "Sorry, no reward.";
+                    resultMessage.textContent = nearMiss;
                     resultMessage.style.color = "red";
                 }
-                loadCoins(); // Refresh coins after the result
-            }, 2000); // Delay for suspense
+                loadCoins(); 
+            }, 2000);
         }
 
-
-        // Betting outcome algorithm: user more likely to lose over time with slim chances of big wins
         function determineOutcome(betAmount) {
             const winChance = Math.random();
 
-            // Realistic algorithm:
             // 60% chance to lose
             if (winChance < 0.60) {
                 return { isWin: false, prize: 0 };
@@ -188,24 +215,24 @@
             
             // 30% chance to win money back (1x return)
             else if (winChance < 0.90) {
-                return { isWin: true, prize: betAmount }; // Win 1x their bet (money back)
+                return { isWin: true, prize: betAmount };
             }
             
             // 9% chance to win a small prize (1.5x to 3x their bet)
             else if (winChance < 0.99) {
-                const prize = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
+                const prize = betAmount * (Math.random() * 1.5 + 1.5); 
                 return { isWin: true, prize: Math.round(prize) };
             }
             
             // 0.9% chance to win a medium prize (5x to 10x their bet)
             else if (winChance < 0.999) {
-                const prize = betAmount * (Math.random() * 5 + 5); // Win between 5x to 10x the bet
+                const prize = betAmount * (Math.random() * 5 + 5); 
                 return { isWin: true, prize: Math.round(prize) };
             }
             
             // 0.1% chance to win a large prize (50x to 100x their bet)
             else {
-                const prize = betAmount * (Math.random() * 50 + 50); // Win between 50x to 100x the bet
+                const prize = betAmount * (Math.random() * 50 + 50); 
                 return { isWin: true, prize: Math.round(prize) };
             }
         }
@@ -215,8 +242,7 @@
             loadCoins();
         }
 
-        // Call onLoadCalls on load
         window.onload = onLoadCalls;
     </script>
 </body>
-</html>
+</
