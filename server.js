@@ -30,8 +30,19 @@ const userSchema = new mongoose.Schema({
             value: Number, // Current value of the investment
         }
     ],
-    isChallengeHost: { type: Boolean, default: false }
+    isChallengeHost: { type: Boolean, default: false },
+    transactions: [
+        {
+            type: { type: String }, // e.g., "bet", "reward", "transfer"
+            amount: { type: Number }, // Amount of coins gained or lost
+            date: { type: Date, default: Date.now }, // Timestamp of the transaction
+            totalCoins: { type: Number }, // Total coins after the transaction
+            details: { type: String } // Optional: Additional details like 'bet' or 'transfer to userX'
+        }
+    ]
 });
+
+
 
 const User = mongoose.model('User', userSchema);
 
@@ -50,6 +61,31 @@ const challengeSchema = new mongoose.Schema({
 
 const Challenge = mongoose.model('Challenge', challengeSchema);
 
+
+// Function to log a transaction with additional details
+async function logTransaction(userId, type, amount, details) {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    const totalCoins = user.coins;
+
+    const transaction = {
+        type,
+        amount,
+        totalCoins,
+        details
+    };
+
+    await User.findByIdAndUpdate(userId, {
+        $push: {
+            transactions: {
+                $each: [transaction],
+                $slice: -50
+            }
+        }
+    });
+}
 
 // Register route
 app.post('/register', async (req, res) => {
@@ -95,7 +131,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id, isChallengeHost: user.isChallengeHost }, 'secretKey');
+    const token = jwt.sign({ id: user._id, isChallengeHost: user.isChallengeHost }, process.env.JWT_SECRET_KEY);
     res.json({
         success: true, token, isChallengeHost: user.isChallengeHost,
         userId: user._id });
@@ -135,7 +171,7 @@ const authenticate = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];  // Extract the token part
     try {
-        const decoded = jwt.verify(token, 'secretKey');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.userId = decoded.id;
         next();
     } catch (err) {
@@ -156,6 +192,9 @@ app.post('/invest', authenticate, async (req, res) => {
         user.investments.push({ share, amount, value: shareValue * amount });
 
         await user.save();
+
+        await logTransaction(req.userId, 'invest', amount, share);
+
         res.json({ message: 'Investment successful' });
     } else {
         res.status(400).json({ error: 'Insufficient coins' });
@@ -212,6 +251,10 @@ app.post('/transfer', authenticate, async (req, res) => {
     // Add coins to recipient
     recipient.coins += transferAmount;
     await recipient.save();
+
+    // Log transactions for both sender and recipient
+    await logTransaction(sender._id, 'transfer', transferAmount,`Transferred to ${recipient.username}`);
+    await logTransaction(recipient._id, 'transfer', transferAmount, `Received from ${sender.username}`);
 
     res.json({ message: 'Transfer successful' });
 });
@@ -327,6 +370,8 @@ app.post('/challenge/verify', authenticate, async (req, res) => {
 
         await challenge.save(); // Save the updated challenge
 
+        await logTransaction(userId, 'challenge reward', challenge.reward, '');
+
         res.json({ message: 'Challenge completion verified for the user', awardedCoins: challenge.reward });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
@@ -352,9 +397,8 @@ app.post('/betting/place', authenticate, async (req, res) => {
     gambler.coins -= betAmount;
     await gambler.save();
 
-    // Add coins to recipient
-    //recipient.coins += transferAmount;
-    //await recipient.save();
+    // Log the transaction
+    await logTransaction(req.userId, 'bet', betAmount, 'Bet placed');
 
     res.json({ message: 'Bet placed successfully' });
 });
@@ -373,6 +417,9 @@ app.post('/betting/reward', authenticate, async (req, res) => {
     // Add coins to gambler
     gambler.coins += reward;
     await gambler.save();
+
+    // Log the transaction
+    await logTransaction(req.userId, 'bet', reward, 'Bet reward');
 
     res.json({ message: 'Rewarded successfully' });
 });

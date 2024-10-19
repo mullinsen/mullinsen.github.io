@@ -60,6 +60,44 @@
             font-size: 18px;
             font-weight: bold;
         }
+
+        /* Spin Wheel Styles */
+        .wheel-container {
+            position: relative;
+            margin: 20px auto;
+            width: 250px;
+            height: 250px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #333;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background-color: lightgreen;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            transform-origin: 100% 100%;
+        }
+
+        /* Arrow at the top */
+        .arrow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid red;
+        }
     </style>
 </head>
 <body>
@@ -78,8 +116,18 @@
 
         <button class="bet-btn" id="bet-btn" onclick="placeBet()">Place Bet</button>
 
-        <!-- Spinner animation to create suspense -->
-        <div class="spinner" id="spinner"></div>
+        <!-- Spin Wheel -->
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment" style="background-color: #FFD700; transform: rotate(0deg);">1x</div>
+                <div class="wheel-segment" style="background-color: #FF5733; transform: rotate(60deg);">2x</div>
+                <div class="wheel-segment" style="background-color: #C70039; transform: rotate(120deg);">5x</div>
+                <div class="wheel-segment" style="background-color: #900C3F; transform: rotate(180deg);">10x</div>
+                <div class="wheel-segment" style="background-color: #581845; transform: rotate(240deg);">50x</div>
+                <div class="wheel-segment" style="background-color: #28B463; transform: rotate(300deg);">100x</div>
+            </div>
+        </div>
 
         <!-- Result message -->
         <p class="result-message" id="result-message"></p>
@@ -94,6 +142,8 @@
     <script src="auth.js"></script>
     <script src="loadUserInformation.js"></script>
     <script>
+        let spinAngle = 0;
+
         async function placeBetServer() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
 
@@ -134,80 +184,57 @@
         async function placeBet() {
             const betAmount = parseFloat(document.getElementById('bet-amount').value);
             const resultMessage = document.getElementById('result-message');
-            const spinner = document.getElementById('spinner');
+            const wheel = document.getElementById('wheel');
 
             if (!betAmount || betAmount <= 0) {
                 resultMessage.textContent = "Please enter a valid bet amount!";
                 return;
             }
 
-            // Reset result message and show spinner
             resultMessage.textContent = "";
-            spinner.style.display = "block";
 
             // Try placing the bet on the server and handle errors
             try {
                 await placeBetServer(); // If this throws, catch will handle it and return
             } catch (error) {
-                spinner.style.display = "none"; // Hide spinner on error
                 resultMessage.textContent = "Bet failed. Please check your coins and try again.";
                 resultMessage.style.color = "red";
-                return; // Stop further execution if the bet fails
+                return;
             }
 
-            // Simulate delay for suspense with the spinner
+            // Spin the wheel
+            const spinOutcome = determineOutcome();
+            spinAngle = 360 * 4 + spinOutcome.angle; // 4 full rotations plus final stop
+            wheel.style.transform = `rotate(${spinAngle}deg)`;
+
+            // Show result after spin animation (4s delay)
             setTimeout(() => {
-                spinner.style.display = "none";
+                resultMessage.textContent = spinOutcome.isWin 
+                    ? `You won ${spinOutcome.reward} coins!` 
+                    : "So close! You almost hit the jackpot!";
+                resultMessage.style.color = spinOutcome.isWin ? "green" : "red";
 
-                // Determine win or lose based on an algorithm
-                const outcome = determineOutcome(betAmount);
-
-                if (outcome.isWin) {
-                    resultMessage.textContent = `You won ${outcome.prize} coins!`;
-                    resultMessage.style.color = "green";
-                    placeRewardServer(parseFloat(outcome.prize)); // Only give reward after successful bet
-
-                } else {
-                    resultMessage.textContent = `Sorry, no reward. Better luck next time!`;
-                    resultMessage.style.color = "red";
+                if (spinOutcome.isWin) {
+                    placeRewardServer(parseFloat(spinOutcome.reward)); // Only give reward after successful bet
                 }
+
                 loadCoins(); // Refresh coins after the result
-            }, 2000); // Delay for suspense
+            }, 4000);
         }
 
+        // Outcome determination logic with spin angles
+        function determineOutcome() {
+            const outcomes = [
+                { isWin: true, reward: 1, angle: 0 },
+                { isWin: true, reward: 2, angle: 60 },
+                { isWin: true, reward: 5, angle: 120 },
+                { isWin: true, reward: 10, angle: 180 },
+                { isWin: true, reward: 50, angle: 240 },
+                { isWin: true, reward: 100, angle: 300 }
+            ];
 
-        // Betting outcome algorithm: user more likely to lose over time with slim chances of big wins
-        function determineOutcome(betAmount) {
-            const winChance = Math.random();
-
-            // Realistic algorithm:
-            // 60% chance to lose
-            if (winChance < 0.60) {
-                return { isWin: false, prize: 0 };
-            }
-            
-            // 30% chance to win money back (1x return)
-            else if (winChance < 0.90) {
-                return { isWin: true, prize: betAmount }; // Win 1x their bet (money back)
-            }
-            
-            // 9% chance to win a small prize (1.5x to 3x their bet)
-            else if (winChance < 0.99) {
-                const prize = betAmount * (Math.random() * 1.5 + 1.5); // Win between 1.5x to 3x the bet
-                return { isWin: true, prize: Math.round(prize) };
-            }
-            
-            // 0.9% chance to win a medium prize (5x to 10x their bet)
-            else if (winChance < 0.999) {
-                const prize = betAmount * (Math.random() * 5 + 5); // Win between 5x to 10x the bet
-                return { isWin: true, prize: Math.round(prize) };
-            }
-            
-            // 0.1% chance to win a large prize (50x to 100x their bet)
-            else {
-                const prize = betAmount * (Math.random() * 50 + 50); // Win between 50x to 100x the bet
-                return { isWin: true, prize: Math.round(prize) };
-            }
+            const randomIndex = Math.floor(Math.random() * outcomes.length);
+            return outcomes[randomIndex];
         }
 
         async function onLoadCalls() {
@@ -215,8 +242,7 @@
             loadCoins();
         }
 
-        // Call onLoadCalls on load
         window.onload = onLoadCalls;
     </script>
 </body>
-</html>
+</html
