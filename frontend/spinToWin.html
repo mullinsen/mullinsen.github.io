@@ -61,7 +61,7 @@
             font-weight: bold;
         }
 
-        /* Spin Wheel Styles */
+        /* Circular Spin Wheel Styles */
         .wheel-container {
             position: relative;
             margin: 20px auto;
@@ -74,18 +74,15 @@
             height: 100%;
             border-radius: 50%;
             border: 5px solid #333;
-            position: relative;
+            background: conic-gradient(
+                #FFD700 0deg 60deg,
+                #FF5733 60deg 120deg,
+                #C70039 120deg 180deg,
+                #900C3F 180deg 240deg,
+                #581845 240deg 300deg,
+                #28B463 300deg 360deg
+            );
             transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-        }
-
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            background-color: lightgreen;
-            border-left: 2px solid #333;
-            border-bottom: 2px solid #333;
-            transform-origin: 100% 100%;
         }
 
         /* Arrow at the top */
@@ -119,14 +116,7 @@
         <!-- Spin Wheel -->
         <div class="wheel-container">
             <div class="arrow"></div>
-            <div class="wheel" id="wheel">
-                <div class="wheel-segment" style="background-color: #FFD700; transform: rotate(0deg);">1x</div>
-                <div class="wheel-segment" style="background-color: #FF5733; transform: rotate(60deg);">2x</div>
-                <div class="wheel-segment" style="background-color: #C70039; transform: rotate(120deg);">5x</div>
-                <div class="wheel-segment" style="background-color: #900C3F; transform: rotate(180deg);">10x</div>
-                <div class="wheel-segment" style="background-color: #581845; transform: rotate(240deg);">50x</div>
-                <div class="wheel-segment" style="background-color: #28B463; transform: rotate(300deg);">100x</div>
-            </div>
+            <div class="wheel" id="wheel"></div>
         </div>
 
         <!-- Result message -->
@@ -139,6 +129,7 @@
             © 2024 Kremerte Pølser. All rights reserved.
         </footer>
     </div>
+
     <script src="auth.js"></script>
     <script src="loadUserInformation.js"></script>
     <script>
@@ -245,4 +236,4 @@
         window.onload = onLoadCalls;
     </script>
 </body>
-</html
+</html>
