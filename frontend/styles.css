@@ -115,16 +115,33 @@ body {
 
 /* Comments section styles */
 .comments-section {
-    margin-top: 20px;
-    text-align: left;
+    margin-top: 20px; /* Space between other elements and comments section */
 }
 
-.comment {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+#comment-input {
+    width: 100%; /* Use 100% width of the parent */
+    padding: 10px; /* Padding for comfort */
+    margin-bottom: 10px; /* Space below the input */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.comment-btn {
+    width: 100%; /* Same width as input */
+    padding: 10px; /* Padding for comfort */
+    background-color: #4CAF50; /* Button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s ease; /* Transition for hover effect */
+}
+
+.comment-btn:hover {
+    background-color: #45a049; /* Darker shade on hover */
 }
 
 footer {
